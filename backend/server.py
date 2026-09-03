@@ -40,6 +40,8 @@ def load_responses_from_disk():
 
 def load_default_quiz():
     questions = []
+    print(f"Current working directory: {os.getcwd()}")
+    print(f"Files in directory: {os.listdir('.')}")
     
     if os.path.exists(CSV_FILE):
         try:
@@ -47,7 +49,6 @@ def load_default_quiz():
                 reader = csv.DictReader(f)
                 for index, row in enumerate(reader):
                     try:
-                        # Parse options safely
                         options_raw = row.get("options", "[]")
                         options_list = ast.literal_eval(options_raw) if options_raw.startswith("[") else [opt.strip() for opt in options_raw.split(",")]
                         
@@ -66,7 +67,7 @@ def load_default_quiz():
         except Exception as e:
             print(f"Error parsing CSV file: {e}")
     else:
-        print(f"Warning: {CSV_FILE} not found in repository root!")
+        print(f"CRITICAL: {CSV_FILE} was not found in {os.getcwd()}!")
 
     active_quizzes[DEFAULT_QUIZ_ID] = {
         "quizId": DEFAULT_QUIZ_ID,
