@@ -46,40 +46,66 @@ def load_default_quiz():
             with open(CSV_FILE, mode="r", encoding="utf-8") as f:
                 content = f.read()
                 
-            # Clean up potential carriage returns
             content = content.replace("\r\n", "\n")
             lines = content.split("\n")
-            
-            # Filter out empty lines
             valid_lines = [l for l in lines if l.strip()]
             if not valid_lines:
                 print(f"Warning: {CSV_FILE} is empty!")
                 return
 
-            # Check if first line is a header
             start_idx = 1 if "question_id" in valid_lines[0].lower() else 0
             
             for index, line in enumerate(valid_lines[start_idx:], start=1):
                 try:
-                    # Use csv.reader on the single line to handle quotes properly
-                    row = next(csv.reader([line]))
-                    if len(row) < 6:
+                    # Find option list brackets [...] to safely bypass internal commas
+                    start_bracket = line.find('[')
+                    end_bracket = line.rfind(']')
+                    
+                    if start_bracket == -1 or end_bracket == -1:
                         continue
                         
-                    q_id = int(row[0].strip())
-                    q_text = row[1].strip()
+                    # Left side: question_id and question_text
+                    left_part = line[:start_bracket].strip()
+                    if left_part.endswith(','):
+                        left_part = left_part[:-1]
                     
-                    # Options are in column index 2 (can be parsed via ast.literal_eval)
-                    options_raw = row[2].strip()
+                    comma_idx = left_part.find(',')
+                    if comma_idx == -1:
+                        q_id = index
+                        q_text = left_part.strip('"\'')
+                    else:
+                        id_str = left_part[:comma_idx].strip().strip('"\'')
+                        q_id = int(id_str) if id_str.isdigit() else index
+                        q_text = left_part[comma_idx+1:].strip().strip('"\'')
+                        
+                    # Middle: options list
+                    options_raw = line[start_bracket:end_bracket+1]
                     try:
                         options_list = ast.literal_eval(options_raw)
                     except Exception:
-                        options_list = [opt.strip().strip('"').strip("'") for opt in options_raw.strip("[]").split(",")]
+                        options_list = [o.strip().strip('"\'') for o in options_raw[1:-1].split(',')]
                         
-                    q_correct = row[3].strip()
-                    q_timer = int(row[4].strip())
-                    q_type = row[5].strip()
+                    # Right side: correct_answer, timer_seconds, type
+                    right_part = line[end_bracket+1:].strip()
+                    if right_part.startswith(','):
+                        right_part = right_part[1:]
+                        
+                    right_row = next(csv.reader([right_part]))
+                    right_row = [r.strip() for r in right_row if r.strip()]
                     
+                    if len(right_row) >= 3:
+                        q_correct = right_row[0].strip('"\'')
+                        q_timer = int(right_row[1]) if right_row[1].isdigit() else 15
+                        q_type = right_row[2].strip('"\'')
+                    elif len(right_row) == 2:
+                        q_correct = right_row[0].strip('"\'')
+                        q_timer = int(right_row[1]) if right_row[1].isdigit() else 15
+                        q_type = "radio"
+                    else:
+                        q_correct = right_row[0].strip('"\'') if right_row else ""
+                        q_timer = 15
+                        q_type = "radio"
+                        
                     questions.append({
                         "question_id": q_id,
                         "question_text": q_text,
