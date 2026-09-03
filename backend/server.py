@@ -48,63 +48,62 @@ def load_default_quiz():
                 
             content = content.replace("\r\n", "\n")
             lines = content.split("\n")
-            valid_lines = [l for l in lines if l.strip()]
-            if not valid_lines:
-                print(f"Warning: {CSV_FILE} is empty!")
-                return
-
-            start_idx = 1 if "question_id" in valid_lines[0].lower() else 0
             
-            for index, line in enumerate(valid_lines[start_idx:], start=1):
+            for index, line in enumerate(lines, start=1):
+                line = line.strip()
+                if not line or "question_id" in line.lower():
+                    continue
+                
                 try:
                     # Find option list brackets [...] to safely bypass internal commas
-                    start_bracket = line.find('[')
-                    end_bracket = line.rfind(']')
+                    start_b = line.find('[')
+                    end_b = line.rfind(']')
                     
-                    if start_bracket == -1 or end_bracket == -1:
+                    if start_b == -1 or end_b == -1:
                         continue
                         
                     # Left side: question_id and question_text
-                    left_part = line[:start_bracket].strip()
-                    if left_part.endswith(','):
-                        left_part = left_part[:-1]
+                    left = line[:start_b].strip()
+                    if left.endswith(','):
+                        left = left[:-1]
                     
-                    comma_idx = left_part.find(',')
-                    if comma_idx == -1:
-                        q_id = index
-                        q_text = left_part.strip('"\'')
-                    else:
-                        id_str = left_part[:comma_idx].strip().strip('"\'')
-                        q_id = int(id_str) if id_str.isdigit() else index
-                        q_text = left_part[comma_idx+1:].strip().strip('"\'')
+                    comma_pos = left.find(',')
+                    if comma_pos == -1:
+                        continue
                         
+                    q_id_str = left[:comma_pos].strip().strip('"\'')
+                    q_id = int(q_id_str) if q_id_str.isdigit() else index
+                    q_text = left[comma_pos+1:].strip().strip('"\'')
+                    
                     # Middle: options list
-                    options_raw = line[start_bracket:end_bracket+1]
+                    options_raw = line[start_b:end_b+1]
                     try:
                         options_list = ast.literal_eval(options_raw)
                     except Exception:
                         options_list = [o.strip().strip('"\'') for o in options_raw[1:-1].split(',')]
                         
                     # Right side: correct_answer, timer_seconds, type
-                    right_part = line[end_bracket+1:].strip()
-                    if right_part.startswith(','):
-                        right_part = right_part[1:]
+                    right = line[end_b+1:].strip()
+                    if right.startswith(','):
+                        right = right[1:]
                         
-                    right_row = next(csv.reader([right_part]))
-                    right_row = [r.strip() for r in right_row if r.strip()]
+                    parts = next(csv.reader([right]))
+                    parts = [p.strip().strip('"\'') for p in parts if p.strip()]
                     
-                    if len(right_row) >= 3:
-                        q_correct = right_row[0].strip('"\'')
-                        q_timer = int(right_row[1]) if right_row[1].isdigit() else 15
-                        q_type = right_row[2].strip('"\'')
-                    elif len(right_row) == 2:
-                        q_correct = right_row[0].strip('"\'')
-                        q_timer = int(right_row[1]) if right_row[1].isdigit() else 15
+                    if len(parts) >= 3:
+                        q_type = parts[-1]
+                        q_timer_str = parts[-2]
+                        q_timer = int(q_timer_str) if q_timer_str.isdigit() else 15
+                        q_correct = ",".join(parts[:-2])
+                    elif len(parts) == 2:
                         q_type = "radio"
+                        q_timer_str = parts[-1]
+                        q_timer = int(q_timer_str) if q_timer_str.isdigit() else 15
+                        q_correct = parts[0]
                     else:
-                        q_correct = right_row[0].strip('"\'') if right_row else ""
-                        q_timer = 15
                         q_type = "radio"
+                        q_timer = 15
+                        q_correct = parts[0] if parts else ""
                         
                     questions.append({
                         "question_id": q_id,
