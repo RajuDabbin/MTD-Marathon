@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 import json
 import os
+import csv
+import ast
 
 app = FastAPI()
 
@@ -18,6 +20,7 @@ active_quizzes = {}
 student_responses = {}
 DEFAULT_QUIZ_ID = "MTD-2026"
 RESULTS_FILE = "results.json"
+CSV_FILE = "questions.csv"
 
 def save_responses_to_disk():
     try:
@@ -36,31 +39,35 @@ def load_responses_from_disk():
             student_responses = {}
 
 def load_default_quiz():
-    questions = [
-        {
-            "question_id": 1,
-            "question_text": "What is the capital of France?",
-            "options": ["London", "Paris", "Berlin", "Madrid"],
-            "correct_answer": "Paris",
-            "timer_seconds": 15,
-            "type": "radio"
-        },
-        {
-            "question_id": 2,
-            "question_text": "Which of these are programming languages?",
-            "options": ["Python", "Banana", "JavaScript", "Car"],
-            "correct_answer": "Python,JavaScript",
-            "timer_seconds": 20,
-            "type": "checkbox"
-        }
-    ]
+    questions = []
+    
+    if os.path.exists(CSV_FILE):
+        try:
+            with open(CSV_FILE, mode="r", encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    # Safely parse the options string representation of a list into a real Python list
+                    options_list = ast.literal_eval(row["options"])
+                    
+                    questions.append({
+                        "question_id": int(row["question_id"]),
+                        "question_text": row["question_text"],
+                        "options": options_list,
+                        "correct_answer": row["correct_answer"],
+                        "timer_seconds": int(row["timer_seconds"]),
+                        "type": row["type"]
+                    })
+            print(f"Successfully loaded {len(questions)} questions from {CSV_FILE}!")
+        except Exception as e:
+            print(f"Error parsing CSV file: {e}")
+    else:
+        print(f"Warning: {CSV_FILE} not found in repository root!")
 
     active_quizzes[DEFAULT_QUIZ_ID] = {
         "quizId": DEFAULT_QUIZ_ID,
         "questions": questions,
         "isCompleted": False
     }
-    print(f"Quiz '{DEFAULT_QUIZ_ID}' loaded successfully with {len(questions)} questions.")
 
 @app.on_event("startup")
 async def startup_event():
