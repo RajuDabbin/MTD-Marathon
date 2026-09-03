@@ -4,7 +4,7 @@ const BACKEND_WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:5000';
 
 export default function StudentApp() {
   const [joined, setJoined] = useState(false);
-  const [quizId, setQuizId] = useState(''); // Removed default value
+  const [quizId, setQuizId] = useState('');
   const [student, setStudent] = useState({
     email: '',
     username: '',
@@ -109,33 +109,33 @@ export default function StudentApp() {
           <form onSubmit={handleJoin} className="space-y-4">
             <div>
               <label className="text-xs text-slate-400 block mb-1">Quiz Room ID</label>
-              <input type="text"  value={quizId} onChange={e => setQuizId(e.target.value)} required className="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-emerald-500" />
+              <input type="text" value={quizId} onChange={e => setQuizId(e.target.value)} required className="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-emerald-500" />
             </div>
             <div>
               <label className="text-xs text-slate-400 block mb-1">Email Address</label>
-              <input type="email"  value={student.email} onChange={e => setStudent({...student, email: e.target.value})} required className="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-emerald-500" />
+              <input type="email" value={student.email} onChange={e => setStudent({...student, email: e.target.value})} required className="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-emerald-500" />
             </div>
             <div>
               <label className="text-xs text-slate-400 block mb-1">Full Name</label>
-              <input type="text"  value={student.username} onChange={e => setStudent({...student, username: e.target.value})} required className="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-emerald-500" />
+              <input type="text" value={student.username} onChange={e => setStudent({...student, username: e.target.value})} required className="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-emerald-500" />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs text-slate-400 block mb-1">USN</label>
-                <input type="text"  value={student.usn} onChange={e => setStudent({...student, usn: e.target.value})} required className="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-emerald-500" />
+                <input type="text" value={student.usn} onChange={e => setStudent({...student, usn: e.target.value})} required className="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-emerald-500" />
               </div>
               <div>
                 <label className="text-xs text-slate-400 block mb-1">Semester</label>
-                <input type="number" min="1" max="8"  value={student.semester} onChange={e => setStudent({...student, semester: e.target.value})} required className="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-emerald-500" />
+                <input type="number" min="1" max="8" value={student.semester} onChange={e => setStudent({...student, semester: e.target.value})} required className="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-emerald-500" />
               </div>
             </div>
             <div>
               <label className="text-xs text-slate-400 block mb-1">College Name</label>
-              <input type="text"  value={student.college} onChange={e => setStudent({...student, college: e.target.value})} required className="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-emerald-500" />
+              <input type="text" value={student.college} onChange={e => setStudent({...student, college: e.target.value})} required className="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-emerald-500" />
             </div>
             <div>
               <label className="text-xs text-slate-400 block mb-1">Phone Number</label>
-              <input type="tel" maxLength="10"  value={student.phone} onChange={e => setStudent({...student, phone: e.target.value})} required className="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-emerald-500" />
+              <input type="tel" maxLength="10" value={student.phone} onChange={e => setStudent({...student, phone: e.target.value})} required className="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-emerald-500" />
             </div>
             <button type="submit" className="w-full bg-emerald-600 text-white p-3.5 rounded-xl font-bold hover:bg-emerald-500 cursor-pointer mt-2">
               Join Assessment
@@ -182,7 +182,7 @@ export default function StudentApp() {
             return (
               <div key={qIndex} className="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-md space-y-4">
                 <div className="border-b border-slate-700 pb-3">
-                  <span className="text-sm font-bold text-white">Question {qIndex + 1}</span>
+                  <span className="text-sm font-bold text-white">Question {qIndex + 1}: {q.question_text}</span>
                   <div className="text-xs text-slate-400 mt-1">
                     {isRadio ? "🔘 Select a correct answer" : "☑️ Select all correct answers"}
                   </div>
