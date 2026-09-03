@@ -45,18 +45,23 @@ def load_default_quiz():
         try:
             with open(CSV_FILE, mode="r", encoding="utf-8") as f:
                 reader = csv.DictReader(f)
-                for row in reader:
-                    # Safely parse the options string representation of a list into a real Python list
-                    options_list = ast.literal_eval(row["options"])
-                    
-                    questions.append({
-                        "question_id": int(row["question_id"]),
-                        "question_text": row["question_text"],
-                        "options": options_list,
-                        "correct_answer": row["correct_answer"],
-                        "timer_seconds": int(row["timer_seconds"]),
-                        "type": row["type"]
-                    })
+                for index, row in enumerate(reader):
+                    try:
+                        # Parse options safely
+                        options_raw = row.get("options", "[]")
+                        options_list = ast.literal_eval(options_raw) if options_raw.startswith("[") else [opt.strip() for opt in options_raw.split(",")]
+                        
+                        questions.append({
+                            "question_id": int(row.get("question_id", index + 1)),
+                            "question_text": row.get("question_text", ""),
+                            "options": options_list,
+                            "correct_answer": str(row.get("correct_answer", "")).strip(),
+                            "timer_seconds": int(row.get("timer_seconds", 15)),
+                            "type": row.get("type", "radio").strip()
+                        })
+                    except Exception as row_err:
+                        print(f"Skipping malformed row {index}: {row_err}")
+                        
             print(f"Successfully loaded {len(questions)} questions from {CSV_FILE}!")
         except Exception as e:
             print(f"Error parsing CSV file: {e}")
