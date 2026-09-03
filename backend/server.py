@@ -41,9 +41,9 @@ def load_responses_from_disk():
 def load_default_quiz():
     questions = []
     
-    if os.path.exists(quiz_questions.csv):
+    if os.path.exists(CSV_FILE):
         try:
-            with open(quiz_questions.csv, mode="r", encoding="utf-8") as f:
+            with open(CSV_FILE, mode="r", encoding="utf-8") as f:
                 reader = csv.DictReader(f)
                 for index, row in enumerate(reader):
                     try:
@@ -62,11 +62,11 @@ def load_default_quiz():
                     except Exception as row_err:
                         print(f"Skipping malformed row {index}: {row_err}")
                         
-            print(f"Successfully loaded {len(questions)} questions from {quiz_questions.csv}!")
+            print(f"Successfully loaded {len(questions)} questions from {CSV_FILE}!")
         except Exception as e:
             print(f"Error parsing CSV file: {e}")
     else:
-        print(f"Warning: {quiz_questions.csv} not found in repository root!")
+        print(f"Warning: {CSV_FILE} not found in repository root!")
 
     active_quizzes[DEFAULT_QUIZ_ID] = {
         "quizId": DEFAULT_QUIZ_ID,
