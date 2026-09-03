@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 import json
 import os
+import csv
 import ast
 
 app = FastAPI()
@@ -43,61 +44,41 @@ def load_default_quiz():
     if os.path.exists(CSV_FILE):
         try:
             with open(CSV_FILE, mode="r", encoding="utf-8") as f:
-                lines = f.readlines()
+                content = f.read()
                 
-            # Skip header line if it exists
-            start_idx = 1 if lines and "question_id" in lines[0].lower() else 0
+            # Clean up potential carriage returns
+            content = content.replace("\r\n", "\n")
+            lines = content.split("\n")
             
-            for index, line in enumerate(lines[start_idx:], start=1):
-                line = line.strip()
-                if not line:
-                    continue
-                
+            # Filter out empty lines
+            valid_lines = [l for l in lines if l.strip()]
+            if not valid_lines:
+                print(f"Warning: {CSV_FILE} is empty!")
+                return
+
+            # Check if first line is a header
+            start_idx = 1 if "question_id" in valid_lines[0].lower() else 0
+            
+            for index, line in enumerate(valid_lines[start_idx:], start=1):
                 try:
-                    # Find the bracket positions for options [...]
-                    start_bracket = line.find('[')
-                    end_bracket = line.rfind(']')
-                    
-                    if start_bracket == -1 or end_bracket == -1:
-                        print(f"Skipping line {index}: No option brackets found.")
+                    # Use csv.reader on the single line to handle quotes properly
+                    row = next(csv.reader([line]))
+                    if len(row) < 6:
                         continue
                         
-                    # Part 1: Before options -> question_id and question_text
-                    prefix = line[:start_bracket].strip()
-                    if prefix.endswith(','):
-                        prefix = prefix[:-1]
+                    q_id = int(row[0].strip())
+                    q_text = row[1].strip()
                     
-                    first_comma = prefix.find(',')
-                    if first_comma == -1:
-                        q_id = index
-                        q_text = prefix
-                    else:
-                        q_id_str = prefix[:first_comma].strip()
-                        q_id = int(q_id_str) if q_id_str.isdigit() else index
-                        q_text = prefix[first_comma + 1:].strip().strip('"')
-                        
-                    # Part 2: The options list inside brackets
-                    options_raw = line[start_bracket:end_bracket + 1]
+                    # Options are in column index 2 (can be parsed via ast.literal_eval)
+                    options_raw = row[2].strip()
                     try:
                         options_list = ast.literal_eval(options_raw)
                     except Exception:
-                        # Fallback parsing if literal_eval fails on raw strings
-                        options_list = [opt.strip().strip('"').strip("'") for opt in options_raw[1:-1].split(',')]
+                        options_list = [opt.strip().strip('"').strip("'") for opt in options_raw.strip("[]").split(",")]
                         
-                    # Part 3: After options -> correct_answer, timer_seconds, type
-                    suffix = line[end_bracket + 1:].strip()
-                    if suffix.startswith(','):
-                        suffix = suffix[1:]
-                        
-                    suffix_parts = [p.strip().strip('"').strip("'") for p in suffix.split(',')]
-                    
-                    # Expecting at least type and timer at the end, correct_answer right after options
-                    q_type = suffix_parts[-1] if len(suffix_parts) >= 1 else "radio"
-                    q_timer = int(suffix_parts[-2]) if len(suffix_parts) >= 2 and suffix_parts[-2].isdigit() else 15
-                    
-                    # Everything else between suffix start and last 2 parts is the correct answer
-                    correct_ans_parts = suffix_parts[:-2] if len(suffix_parts) >= 2 else suffix_parts
-                    q_correct = ",".join(correct_ans_parts).strip().strip('"').strip("'")
+                    q_correct = row[3].strip()
+                    q_timer = int(row[4].strip())
+                    q_type = row[5].strip()
                     
                     questions.append({
                         "question_id": q_id,
@@ -109,7 +90,7 @@ def load_default_quiz():
                     })
                 except Exception as row_err:
                     print(f"Skipping malformed row {index}: {row_err}")
-                    
+                        
             print(f"Successfully loaded {len(questions)} questions from {CSV_FILE}!")
         except Exception as e:
             print(f"Error parsing CSV file: {e}")
@@ -263,7 +244,7 @@ async def start_quiz_timeline(quiz_id: str):
             "duration": 10
         }))
     
-    Asyncio.sleep(10)
+    await asyncio.sleep(10)
 
     for conn in manager.active_connections.get(quiz_id, []):
         await conn.send_text(json.dumps({
