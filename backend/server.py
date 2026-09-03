@@ -36,7 +36,6 @@ def load_responses_from_disk():
             student_responses = {}
 
 def load_default_quiz():
-    # Clean built-in questions to completely avoid CSV parsing bugs
     questions = [
         {
             "question_id": 1,
@@ -79,7 +78,9 @@ class ConnectionManager:
         self.active_connections[quiz_id].append(websocket)
         print(f"Client connected to room: {quiz_id}")
 
-    fn_disconnect = lambda self, qid, ws: self.active_connections[qid].remove(ws) if qid in self.active_connections and ws in self.active_connections[qid] else None
+    def fn_disconnect(self, qid: str, ws: WebSocket):
+        if qid in self.active_connections and ws in self.active_connections[qid]:
+            self.active_connections[qid].remove(ws)
 
 manager = ConnectionManager()
 
@@ -93,6 +94,47 @@ def evaluate_quiz(data: dict):
         raise HTTPException(status_code=404, detail="Quiz not found")
 
     evaluation_results = []
+    for usn, resp in responses.items():
+        student_data = resp.get("studentInfo", {"usn": usn})
+        student_answers = resp.get("answers", {})
+        score = 0
+        total_questions = len(quiz["questions"])
+
+        for index, q in enumerate(quiz["questions"]):
+            ans_key = str(index)
+            student_choice = student_answers.get(ans_key, [])
+            correct_ans = q["correct_answer"]
+
+            if q["type"] == "radio":
+                if str(student_choice).strip().lower() == str(correct_ans).strip().lower():
+                    score += 1
+            elif q["type"] == "checkbox":
+                if isinstance(student_choice, list):
+                    student_set = {str(x).strip().lower() for x in student_choice}
+                    correct_set = {str(x).strip().lower() for x in correct_ans.split(",")}
+                    if student_set == correct_set:
+                        score += 1
+
+        percentage = round((score / total_questions) * 100, 2) if total_questions > 0 else 0.0
+        evaluation_results.append({
+            "student": student_data,
+            "score": score,
+            "total": total_questions,
+            "percentage": percentage,
+            "answers": student_answers
+        })
+
+    return {"success": True, "results": evaluation_results}
+
+@app.get("/api/get-results/{quiz_id}")
+def get_quiz_results(quiz_id: str):
+    quiz = active_quizzes.get(quiz_id)
+    if not quiz:
+        raise HTTPException(status_code=404, detail="Quiz not found")
+    
+    responses = student_responses.get(quiz_id, {})
+    evaluation_results = []
+    
     for usn, resp in responses.items():
         student_data = resp.get("studentInfo", {"usn": usn})
         student_answers = resp.get("answers", {})
