@@ -55,18 +55,18 @@ def load_default_quiz():
                     continue
                 
                 try:
-                    # Find option list brackets [...] to safely bypass internal commas
+                    # 1. Find the option brackets [...]
                     start_b = line.find('[')
                     end_b = line.rfind(']')
                     
                     if start_b == -1 or end_b == -1:
                         continue
                         
-                    # Left side: question_id and question_text
+                    # 2. Extract ID and Question Text from the left side
                     left = line[:start_b].strip()
                     if left.endswith(','):
                         left = left[:-1]
-                    
+                        
                     comma_pos = left.find(',')
                     if comma_pos == -1:
                         continue
@@ -75,18 +75,19 @@ def load_default_quiz():
                     q_id = int(q_id_str) if q_id_str.isdigit() else index
                     q_text = left[comma_pos+1:].strip().strip('"\'')
                     
-                    # Middle: options list
+                    # 3. Extract Options safely from inside the brackets
                     options_raw = line[start_b:end_b+1]
                     try:
                         options_list = ast.literal_eval(options_raw)
                     except Exception:
                         options_list = [o.strip().strip('"\'') for o in options_raw[1:-1].split(',')]
                         
-                    # Right side: correct_answer, timer_seconds, type
+                    # 4. Extract Answer, Timer, and Type from the right side
                     right = line[end_b+1:].strip()
                     if right.startswith(','):
                         right = right[1:]
                         
+                    # Parse remaining values using csv reader on the right snippet
                     parts = next(csv.reader([right]))
                     parts = [p.strip().strip('"\'') for p in parts if p.strip()]
                     
@@ -116,7 +117,7 @@ def load_default_quiz():
                 except Exception as row_err:
                     print(f"Skipping malformed row {index}: {row_err}")
                         
-            print(f"Successfully loaded {len(questions)} questions from {CSV_FILE}!")
+            print(f"Successfully loaded {len(questions)} questions cleanly from {CSV_FILE}!")
         except Exception as e:
             print(f"Error parsing CSV file: {e}")
     else:
@@ -127,7 +128,7 @@ def load_default_quiz():
         "questions": questions,
         "isCompleted": False
     }
-
+    
 @app.on_event("startup")
 async def startup_event():
     load_default_quiz()
