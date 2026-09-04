@@ -28,320 +28,319 @@ EMBEDDED_QUESTIONS = [
         "correct_answer": "10.5",
         "timer_seconds": 15,
         "type": "radio"
+    },
+    {
+        "question_id": 2,
+        "question_text": "Which of the following is a valid string declaration?",
+        "options": ["name = John", "name = 'John'", "name = (John)", "name = {John}"],
+        "correct_answer": "name = 'John'",
+        "timer_seconds": 15,
+        "type": "radio"
+    },
+    {
+        "question_id": 3,
+        "question_text": "How do you create an empty set in Python?",
+        "options": ["{}", "set()", "[]", "()"],
+        "correct_answer": "set()",
+        "timer_seconds": 15,
+        "type": "radio"
+    },
+    {
+        "question_id": 4,
+        "question_text": "Which data type is immutable in Python?",
+        "options": ["list", "dict", "set", "tuple"],
+        "correct_answer": "tuple",
+        "timer_seconds": 15,
+        "type": "radio"
+    },
+    {
+        "question_id": 5,
+        "question_text": "What is the correct syntax to define a dictionary?",
+        "options": ["{1, 2, 3}", "['a': 1, 'b': 2]", "{'a': 1, 'b': 2}", "('a': 1)"],
+        "correct_answer": "{'a': 1, 'b': 2}",
+        "timer_seconds": 15,
+        "type": "radio"
+    },
+    {
+        "question_id": 6,
+        "question_text": "Which function is used to find the number of elements in a string or list?",
+        "options": ["count()", "size()", "len()", "length()"],
+        "correct_answer": "len()",
+        "timer_seconds": 15,
+        "type": "radio"
+    },
+    {
+        "question_id": 7,
+        "question_text": "Which of the following is a valid f-string syntax?",
+        "options": ["f'Hello {name}'", "format('Hello {name}')", "f'Hello name'", "'Hello {name}'.f()"],
+        "correct_answer": "f'Hello {name}'",
+        "timer_seconds": 15,
+        "type": "radio"
+    },
+    {
+        "question_id": 8,
+        "question_text": "Which method is used to format strings using placeholders like '{}'?",
+        "options": ["str()", ".format()", "eval()", "print()"],
+        "correct_answer": ".format()",
+        "timer_seconds": 15,
+        "type": "radio"
+    },
+    {
+        "question_id": 9,
+        "question_text": "Which loop runs as long as a condition remains True?",
+        "options": ["for loop", "while loop", "loop", "repeat loop"],
+        "correct_answer": "while loop",
+        "timer_seconds": 15,
+        "type": "radio"
+    },
+    {
+        "question_id": 10,
+        "question_text": "What causes a while loop to become an infinite loop?",
+        "options": ["A condition that never becomes False", "Using a break statement", "Using a counter variable", "Setting a timer"],
+        "correct_answer": "A condition that never becomes False",
+        "timer_seconds": 15,
+        "type": "radio"
+    },
+    {
+        "question_id": 11,
+        "question_text": "Which of the following creates a list?",
+        "options": ["[1, 2, 3]", "(1, 2, 3)", "{1, 2, 3}", "{'a': 1}"],
+        "correct_answer": "[1, 2, 3]",
+        "timer_seconds": 15,
+        "type": "radio"
+    },
+    {
+        "question_id": 12,
+        "question_text": "Which data type stores key-value pairs?",
+        "options": ["list", "tuple", "set", "dict"],
+        "correct_answer": "dict",
+        "timer_seconds": 15,
+        "type": "radio"
+    },
+    {
+        "question_id": 13,
+        "question_text": "Can a set contain duplicate values in Python?",
+        "options": ["Yes", "No", "Only for strings", "Only for numbers"],
+        "correct_answer": "No",
+        "timer_seconds": 15,
+        "type": "radio"
+    },
+    {
+        "question_id": 14,
+        "question_text": "What is the output type of len('Python')?",
+        "options": ["str", "float", "int", "list"],
+        "correct_answer": "int",
+        "timer_seconds": 15,
+        "type": "radio"
+    },
+    {
+        "question_id": 15,
+        "question_text": "Which brackets are used to define a tuple?",
+        "options": ["[]", "{}", "()", "<>"],
+        "correct_answer": "()",
+        "timer_seconds": 15,
+        "type": "radio"
+    },
+    {
+        "question_id": 16,
+        "question_text": "Which keyword is used to start a while loop?",
+        "options": ["for", "while", "loop", "repeat"],
+        "correct_answer": "while",
+        "timer_seconds": 15,
+        "type": "radio"
+    },
+    {
+        "question_id": 17,
+        "question_text": "Which of the following is a valid float value?",
+        "options": ["3", "3.14", "'3.14'", "[3, 14]"],
+        "correct_answer": "3.14",
+        "timer_seconds": 15,
+        "type": "radio"
+    },
+    {
+        "question_id": 18,
+        "question_text": "How are elements inside a set separated?",
+        "options": ["Semicolons", "Colons", "Commas", "Spaces"],
+        "correct_answer": "Commas",
+        "timer_seconds": 15,
+        "type": "radio"
+    },
+    {
+        "question_id": 19,
+        "question_text": "Which of the following uses key lookup instead of position lookup?",
+        "options": ["list", "tuple", "string", "dict"],
+        "correct_answer": "dict",
+        "timer_seconds": 15,
+        "type": "radio"
+    },
+    {
+        "question_id": 20,
+        "question_text": "Which string formatting technique uses curly braces {} and a preceding letter f?",
+        "options": ["f-string", ".format()", "percent formatting", "template string"],
+        "correct_answer": "f-string",
+        "timer_seconds": 15,
+        "type": "radio"
+    },
+    {
+        "question_id": 21,
+        "question_text": "What will be the output of: x = 'Hello'; print(len(x))",
+        "options": ["5", "6", "Hello", "Error"],
+        "correct_answer": "6",
+        "timer_seconds": 20,
+        "type": "radio"
+    },
+    {
+        "question_id": 22,
+        "question_text": "What will be the output of: a = 10; b = 20; print(f'{a}{b}')",
+        "options": ["30", "1020", "Error", "a b"],
+        "correct_answer": "1020",
+        "timer_seconds": 20,
+        "type": "radio"
+    },
+    {
+        "question_id": 23,
+        "question_text": "What will be the output of: text = '{} and {}'; print(text.format('Python', 'Java'))",
+        "options": ["Python and Java", "{} and {}", "Error", "Java and Python"],
+        "correct_answer": "Python and Java",
+        "timer_seconds": 20,
+        "type": "radio"
+    },
+    {
+        "question_id": 24,
+        "question_text": "What will be the output of: x = 5; while x < 7: print(x); x = x + 1",
+        "options": ["5 6", "5 6 7", "6 7", "Infinite loop"],
+        "correct_answer": "5 6",
+        "timer_seconds": 20,
+        "type": "radio"
+    },
+    {
+        "question_id": 25,
+        "question_text": "What will be the output of: data = [10, 20]; print(len(data))",
+        "options": ["1", "2", "10", "Error"],
+        "correct_answer": "2",
+        "timer_seconds": 20,
+        "type": "radio"
+    },
+    {
+        "question_id": 26,
+        "question_text": "What will be the output of: info = {'name': 'Alice'}; print(len(info))",
+        "options": ["0", "1", "name", "Error"],
+        "correct_answer": "1",
+        "timer_seconds": 20,
+        "type": "radio"
+    },
+    {
+        "question_id": 27,
+        "question_text": "What will be the output of: items = {1, 2, 2, 3}; print(len(items))",
+        "options": ["4", "3", "2", "Error"],
+        "correct_answer": "3",
+        "timer_seconds": 20,
+        "type": "radio"
+    },
+    {
+        "question_id": 28,
+        "question_text": "What will be the output of: msg = 'Data'; print(f'Value is {msg}')",
+        "options": ["Value is Data", "Value is msg", "Data", "Error"],
+        "correct_answer": "Value is Data",
+        "timer_seconds": 20,
+        "type": "radio"
+    },
+    {
+        "question_id": 29,
+        "question_text": "What will be the output of: val = 3.5; print(type(val))",
+        "options": ["<class 'int'>", "<class 'float'>", "<class 'str'>", "<class 'bool'>"],
+        "correct_answer": "<class 'float'>",
+        "timer_seconds": 20,
+        "type": "radio"
+    },
+    {
+        "question_id": 30,
+        "question_text": "What will be the output of: x = 2; while x == 2: print('Loop'); x = 3",
+        "options": ["Loop", "Loop Loop", "Error", "No output"],
+        "correct_answer": "Loop",
+        "timer_seconds": 20,
+        "type": "radio"
+    },
+    {
+        "question_id": 31,
+        "question_text": "Which of the following structures allows heterogeneous data types (ints, strings, floats) together?",
+        "options": ["list", "int only", "float only", "dict keys only"],
+        "correct_answer": "list",
+        "timer_seconds": 15,
+        "type": "radio"
+    },
+    {
+        "question_id": 32,
+        "question_text": "Which collection type is unordered and unindexed?",
+        "options": ["list", "tuple", "string", "set"],
+        "correct_answer": "set",
+        "timer_seconds": 15,
+        "type": "radio"
+    },
+    {
+        "question_id": 33,
+        "question_text": "How do you define a tuple with a single element?",
+        "options": ["(5)", "(5,)", "[5]", "{5}"],
+        "correct_answer": "(5,)",
+        "timer_seconds": 15,
+        "type": "radio"
+    },
+    {
+        "question_id": 34,
+        "question_text": "Which python component evaluates the length of an iterable container?",
+        "options": ["len()", "count()", "size()", "sum()"],
+        "correct_answer": "len()",
+        "timer_seconds": 15,
+        "type": "radio"
+    },
+    {
+        "question_id": 35,
+        "question_text": "Which loop structure is best suited when the exact number of iterations is unknown beforehand?",
+        "options": ["for loop", "while loop", "range loop", "static loop"],
+        "correct_answer": "while loop",
+        "timer_seconds": 15,
+        "type": "radio"
+    },
+    {
+        "question_id": 36,
+        "question_text": "What will be the output of: x = 1; while x < 4: print(x); x = x + 1",
+        "options": ["1 2 3", "1 2 3 4", "2 3 4", "1 2"],
+        "correct_answer": "1 2 3",
+        "timer_seconds": 25,
+        "type": "radio"
+    },
+    {
+        "question_id": 37,
+        "question_text": "What will be the output of: name = 'Code'; print('Language: {}'.format(name))",
+        "options": ["Code", "Language: Code", "Language: {}", "Error"],
+        "correct_answer": "Language: Code",
+        "timer_seconds": 25,
+        "type": "radio"
+    },
+    {
+        "question_id": 38,
+        "question_text": "What will be the output of: my_dict = {'a': 10, 'b': 20}; print(len(my_dict))",
+        "options": ["2", "4", "Error", "3"],
+        "correct_answer": "2",
+        "timer_seconds": 25,
+        "type": "radio"
+    },
+    {
+        "question_id": 39,
+        "question_text": "What will be the output of: values = (10, 20, 30); print(type(values))",
+        "options": ["<class 'list'>", "<class 'tuple'>", "<class 'set'>", "<class 'dict'>"],
+        "correct_answer": "<class 'tuple'>",
+        "timer_seconds": 25,
+        "type": "radio"
+    },
+    {
+        "question_id": 40,
+        "question_text": "What will be the output of: text = 'Python'; print(len(text))",
+        "options": ["5", "6", "7", "Error"],
+        "correct_answer": "6",
+        "timer_seconds": 25,
+        "type": "radio"
     }
-    # },
-    # {
-    #     "question_id": 2,
-    #     "question_text": "Which of the following is a valid string declaration?",
-    #     "options": ["name = John", "name = 'John'", "name = (John)", "name = {John}"],
-    #     "correct_answer": "name = 'John'",
-    #     "timer_seconds": 15,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 3,
-    #     "question_text": "How do you create an empty set in Python?",
-    #     "options": ["{}", "set()", "[]", "()"],
-    #     "correct_answer": "set()",
-    #     "timer_seconds": 15,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 4,
-    #     "question_text": "Which data type is immutable in Python?",
-    #     "options": ["list", "dict", "set", "tuple"],
-    #     "correct_answer": "tuple",
-    #     "timer_seconds": 15,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 5,
-    #     "question_text": "What is the correct syntax to define a dictionary?",
-    #     "options": ["{1, 2, 3}", "['a': 1, 'b': 2]", "{'a': 1, 'b': 2}", "('a': 1)"],
-    #     "correct_answer": "{'a': 1, 'b': 2}",
-    #     "timer_seconds": 15,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 6,
-    #     "question_text": "Which function is used to find the number of elements in a string or list?",
-    #     "options": ["count()", "size()", "len()", "length()"],
-    #     "correct_answer": "len()",
-    #     "timer_seconds": 15,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 7,
-    #     "question_text": "Which of the following is a valid f-string syntax?",
-    #     "options": ["f'Hello {name}'", "format('Hello {name}')", "f'Hello name'", "'Hello {name}'.f()"],
-    #     "correct_answer": "f'Hello {name}'",
-    #     "timer_seconds": 15,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 8,
-    #     "question_text": "Which method is used to format strings using placeholders like '{}'?",
-    #     "options": ["str()", ".format()", "eval()", "print()"],
-    #     "correct_answer": ".format()",
-    #     "timer_seconds": 15,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 9,
-    #     "question_text": "Which loop runs as long as a condition remains True?",
-    #     "options": ["for loop", "while loop", "loop", "repeat loop"],
-    #     "correct_answer": "while loop",
-    #     "timer_seconds": 15,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 10,
-    #     "question_text": "What causes a while loop to become an infinite loop?",
-    #     "options": ["A condition that never becomes False", "Using a break statement", "Using a counter variable", "Setting a timer"],
-    #     "correct_answer": "A condition that never becomes False",
-    #     "timer_seconds": 15,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 11,
-    #     "question_text": "Which of the following creates a list?",
-    #     "options": ["[1, 2, 3]", "(1, 2, 3)", "{1, 2, 3}", "{'a': 1}"],
-    #     "correct_answer": "[1, 2, 3]",
-    #     "timer_seconds": 15,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 12,
-    #     "question_text": "Which data type stores key-value pairs?",
-    #     "options": ["list", "tuple", "set", "dict"],
-    #     "correct_answer": "dict",
-    #     "timer_seconds": 15,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 13,
-    #     "question_text": "Can a set contain duplicate values in Python?",
-    #     "options": ["Yes", "No", "Only for strings", "Only for numbers"],
-    #     "correct_answer": "No",
-    #     "timer_seconds": 15,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 14,
-    #     "question_text": "What is the output type of len('Python')?",
-    #     "options": ["str", "float", "int", "list"],
-    #     "correct_answer": "int",
-    #     "timer_seconds": 15,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 15,
-    #     "question_text": "Which brackets are used to define a tuple?",
-    #     "options": ["[]", "{}", "()", "<>"],
-    #     "correct_answer": "()",
-    #     "timer_seconds": 15,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 16,
-    #     "question_text": "Which keyword is used to start a while loop?",
-    #     "options": ["for", "while", "loop", "repeat"],
-    #     "correct_answer": "while",
-    #     "timer_seconds": 15,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 17,
-    #     "question_text": "Which of the following is a valid float value?",
-    #     "options": ["3", "3.14", "'3.14'", "[3, 14]"],
-    #     "correct_answer": "3.14",
-    #     "timer_seconds": 15,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 18,
-    #     "question_text": "How are elements inside a set separated?",
-    #     "options": ["Semicolons", "Colons", "Commas", "Spaces"],
-    #     "correct_answer": "Commas",
-    #     "timer_seconds": 15,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 19,
-    #     "question_text": "Which of the following uses key lookup instead of position lookup?",
-    #     "options": ["list", "tuple", "string", "dict"],
-    #     "correct_answer": "dict",
-    #     "timer_seconds": 15,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 20,
-    #     "question_text": "Which string formatting technique uses curly braces {} and a preceding letter f?",
-    #     "options": ["f-string", ".format()", "percent formatting", "template string"],
-    #     "correct_answer": "f-string",
-    #     "timer_seconds": 15,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 21,
-    #     "question_text": "What will be the output of: x = 'Hello'; print(len(x))",
-    #     "options": ["5", "6", "Hello", "Error"],
-    #     "correct_answer": "6",
-    #     "timer_seconds": 20,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 22,
-    #     "question_text": "What will be the output of: a = 10; b = 20; print(f'{a}{b}')",
-    #     "options": ["30", "1020", "Error", "a b"],
-    #     "correct_answer": "1020",
-    #     "timer_seconds": 20,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 23,
-    #     "question_text": "What will be the output of: text = '{} and {}'; print(text.format('Python', 'Java'))",
-    #     "options": ["Python and Java", "{} and {}", "Error", "Java and Python"],
-    #     "correct_answer": "Python and Java",
-    #     "timer_seconds": 20,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 24,
-    #     "question_text": "What will be the output of: x = 5; while x < 7: print(x); x = x + 1",
-    #     "options": ["5 6", "5 6 7", "6 7", "Infinite loop"],
-    #     "correct_answer": "5 6",
-    #     "timer_seconds": 20,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 25,
-    #     "question_text": "What will be the output of: data = [10, 20]; print(len(data))",
-    #     "options": ["1", "2", "10", "Error"],
-    #     "correct_answer": "2",
-    #     "timer_seconds": 20,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 26,
-    #     "question_text": "What will be the output of: info = {'name': 'Alice'}; print(len(info))",
-    #     "options": ["0", "1", "name", "Error"],
-    #     "correct_answer": "1",
-    #     "timer_seconds": 20,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 27,
-    #     "question_text": "What will be the output of: items = {1, 2, 2, 3}; print(len(items))",
-    #     "options": ["4", "3", "2", "Error"],
-    #     "correct_answer": "3",
-    #     "timer_seconds": 20,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 28,
-    #     "question_text": "What will be the output of: msg = 'Data'; print(f'Value is {msg}')",
-    #     "options": ["Value is Data", "Value is msg", "Data", "Error"],
-    #     "correct_answer": "Value is Data",
-    #     "timer_seconds": 20,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 29,
-    #     "question_text": "What will be the output of: val = 3.5; print(type(val))",
-    #     "options": ["<class 'int'>", "<class 'float'>", "<class 'str'>", "<class 'bool'>"],
-    #     "correct_answer": "<class 'float'>",
-    #     "timer_seconds": 20,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 30,
-    #     "question_text": "What will be the output of: x = 2; while x == 2: print('Loop'); x = 3",
-    #     "options": ["Loop", "Loop Loop", "Error", "No output"],
-    #     "correct_answer": "Loop",
-    #     "timer_seconds": 20,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 31,
-    #     "question_text": "Which of the following structures allows heterogeneous data types (ints, strings, floats) together?",
-    #     "options": ["list", "int only", "float only", "dict keys only"],
-    #     "correct_answer": "list",
-    #     "timer_seconds": 15,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 32,
-    #     "question_text": "Which collection type is unordered and unindexed?",
-    #     "options": ["list", "tuple", "string", "set"],
-    #     "correct_answer": "set",
-    #     "timer_seconds": 15,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 33,
-    #     "question_text": "How do you define a tuple with a single element?",
-    #     "options": ["(5)", "(5,)", "[5]", "{5}"],
-    #     "correct_answer": "(5,)",
-    #     "timer_seconds": 15,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 34,
-    #     "question_text": "Which python component evaluates the length of an iterable container?",
-    #     "options": ["len()", "count()", "size()", "sum()"],
-    #     "correct_answer": "len()",
-    #     "timer_seconds": 15,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 35,
-    #     "question_text": "Which loop structure is best suited when the exact number of iterations is unknown beforehand?",
-    #     "options": ["for loop", "while loop", "range loop", "static loop"],
-    #     "correct_answer": "while loop",
-    #     "timer_seconds": 15,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 36,
-    #     "question_text": "What will be the output of: x = 1; while x < 4: print(x); x = x + 1",
-    #     "options": ["1 2 3", "1 2 3 4", "2 3 4", "1 2"],
-    #     "correct_answer": "1 2 3",
-    #     "timer_seconds": 25,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 37,
-    #     "question_text": "What will be the output of: name = 'Code'; print('Language: {}'.format(name))",
-    #     "options": ["Code", "Language: Code", "Language: {}", "Error"],
-    #     "correct_answer": "Language: Code",
-    #     "timer_seconds": 25,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 38,
-    #     "question_text": "What will be the output of: my_dict = {'a': 10, 'b': 20}; print(len(my_dict))",
-    #     "options": ["2", "4", "Error", "3"],
-    #     "correct_answer": "2",
-    #     "timer_seconds": 25,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 39,
-    #     "question_text": "What will be the output of: values = (10, 20, 30); print(type(values))",
-    #     "options": ["<class 'list'>", "<class 'tuple'>", "<class 'set'>", "<class 'dict'>"],
-    #     "correct_answer": "<class 'tuple'>",
-    #     "timer_seconds": 25,
-    #     "type": "radio"
-    # },
-    # {
-    #     "question_id": 40,
-    #     "question_text": "What will be the output of: text = 'Python'; print(len(text))",
-    #     "options": ["5", "6", "7", "Error"],
-    #     "correct_answer": "6",
-    #     "timer_seconds": 25,
-    #     "type": "radio"
-    # }
 ]
 
 def save_responses_to_disk():
