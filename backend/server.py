@@ -5,6 +5,7 @@ import json
 import os
 import csv
 import ast
+import io
 
 app = FastAPI()
 
@@ -46,70 +47,37 @@ def load_default_quiz():
             with open(CSV_FILE, mode="r", encoding="utf-8") as f:
                 content = f.read()
                 
-            content = content.replace("\r\n", "\n")
-            lines = content.split("\n")
+            # Use csv.reader to correctly parse rows while respecting quotes
+            f_stream = io.StringIO(content.replace("\r\n", "\n"))
+            reader = csv.reader(f_stream)
             
-            for index, line in enumerate(lines, start=1):
-                line = line.strip()
-                if not line or "question_id" in line.lower():
+            for index, row in enumerate(reader, start=1):
+                if not row or not any(row):
+                    continue
+                
+                # Skip header row if present
+                joined_row_str = "".join(row).lower()
+                if index == 1 and "question_id" in joined_row_str:
                     continue
                 
                 try:
-                    # 1. Find the option brackets [...]
-                    start_b = line.find('[')
-                    end_b = line.rfind(']')
-                    
-                    if start_b == -1 or end_b == -1:
+                    if len(row) < 6:
                         continue
                         
-                    # 2. Extract ID and Question Text from the left side
-                    left = line[:start_b].strip()
-                    if left.endswith(','):
-                        left = left[:-1]
-                        
-                    comma_pos = left.find(',')
-                    if comma_pos == -1:
-                        continue
-                        
-                    q_id_str = left[:comma_pos].strip().strip('"\'')
-                    q_id = int(q_id_str) if q_id_str.isdigit() else index
-                    q_text = left[comma_pos+1:].strip().strip('"\'')
+                    q_id = int(row[0].strip())
+                    q_text = row[1].strip()
                     
-                    # 3. Extract Options safely and split them if they got mashed together
-                    options_raw = line[start_b:end_b+1]
+                    # Options are safely captured in column 2 thanks to CSV quotes
+                    options_raw = row[2].strip()
                     try:
                         options_list = ast.literal_eval(options_raw)
-                        if not isinstance(options_list, list):
-                            raise ValueError()
                     except Exception:
-                        # Fallback: if it got mashed, clean and split manually
-                        cleaned_raw = options_raw.strip("[]")
-                        # If it contains our distinct python option patterns, split them intelligently
-                        options_list = [o.strip().strip('"\'') for o in cleaned_raw.split(',') if o.strip()]
-                    # 4. Extract Answer, Timer, and Type from the right side
-                    right = line[end_b+1:].strip()
-                    if right.startswith(','):
-                        right = right[1:]
+                        options_list = [o.strip().strip('"\'') for o in options_raw.strip("[]").split(',')]
                         
-                    # Parse remaining values using csv reader on the right snippet
-                    parts = next(csv.reader([right]))
-                    parts = [p.strip().strip('"\'') for p in parts if p.strip()]
+                    q_correct = row[3].strip()
+                    q_timer = int(row[4].strip()) if row[4].strip().isdigit() else 15
+                    q_type = row[5].strip()
                     
-                    if len(parts) >= 3:
-                        q_type = parts[-1]
-                        q_timer_str = parts[-2]
-                        q_timer = int(q_timer_str) if q_timer_str.isdigit() else 15
-                        q_correct = ",".join(parts[:-2])
-                    elif len(parts) == 2:
-                        q_type = "radio"
-                        q_timer_str = parts[-1]
-                        q_timer = int(q_timer_str) if q_timer_str.isdigit() else 15
-                        q_correct = parts[0]
-                    else:
-                        q_type = "radio"
-                        q_timer = 15
-                        q_correct = parts[0] if parts else ""
-                        
                     questions.append({
                         "question_id": q_id,
                         "question_text": q_text,
