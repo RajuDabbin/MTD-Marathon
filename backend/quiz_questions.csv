@@ -1,41 +1,41 @@
 question_id,question_text,options,correct_answer,timer_seconds,type
-1,Which of the following represents a float data type in Python?,["10", "10.5", "\"10.5\"", "[10.5]"],10.5,15,radio
-2,Which of the following is a valid string declaration?,["name = John", "name = 'John'", "name = (John)", "name = {John}"],"name = 'John'",15,radio
-3,How do you create an empty set in Python?,["{}", "set()", "[]", "()"],set(),15,radio
-4,Which data type is immutable in Python?,["list", "dict", "set", "tuple"],tuple,15,radio
-5,What is the correct syntax to define a dictionary?,["{1, 2, 3}", "['a': 1, 'b': 2]", "{'a': 1, 'b': 2}", "('a': 1)"],"{'a': 1, 'b': 2}",15,radio
-6,Which function is used to find the number of elements in a string or list?,["count()", "size()", "len()", "length()"],len(),15,radio
-7,Which of the following is a valid f-string syntax?,["f'Hello {name}'", "format('Hello {name}')", "f'Hello name'", "'Hello {name}'.f()"],f'Hello {name}',15,radio
-8,Which method is used to format strings using placeholders like '{}'?,["str()", ".format()", "eval()", "print()"],.format(),15,radio
-9,Which loop runs as long as a condition remains True?,["for loop", "while loop", "loop", "repeat loop"],while loop,15,radio
-10,What causes a while loop to become an infinite loop?,["A condition that never becomes False", "Using a break statement", "Using a counter variable", "Setting a timer"],A condition that never becomes False,15,radio
-11,Which of the following creates a list?,["[1, 2, 3]", "(1, 2, 3)", "{1, 2, 3}", "{'a': 1}"],[1, 2, 3],15,radio
-12,Which data type stores key-value pairs?,["list", "tuple", "set", "dict"],dict,15,radio
-13,Can a set contain duplicate values in Python?,["Yes", "No", "Only for strings", "Only for numbers"],No,15,radio
-14,What is the output type of len('Python')?,["str", "float", "int", "list"],int,15,radio
-15,Which brackets are used to define a tuple?,["[]", "{}", "()", "<>"],(),15,radio
-16,Which keyword is used to start a while loop?,["for", "while", "loop", "repeat"],while,15,radio
-17,Which of the following is a valid float value?,["3", "3.14", "'3.14'", "[3, 14]"],3.14,15,radio
-18,How are elements inside a set separated?,["Semicolons", "Colons", "Commas", "Spaces"],Commas,15,radio
-19,Which of the following uses key lookup instead of position lookup?,["list", "tuple", "string", "dict"],dict,15,radio
-20,Which string formatting technique uses curly braces {} and a preceding letter f?,["f-string", ".format()", "percent formatting", "template string"],f-string,15,radio
-21,What will be the output of: x = 'Hello'; print(len(x)),["5", "6", "Hello", "Error"],6,20,radio
-22,What will be the output of: a = 10; b = 20; print(f'{a}{b}'),["30", "1020", "Error", "a b"],1020,20,radio
-23,What will be the output of: text = '{} and {}'; print(text.format('Python', 'Java')),["Python and Java", "{} and {}", "Error", "Java and Python"],Python and Java,20,radio
-24,What will be the output of: x = 5; while x < 7: print(x); x = x + 1,["5 6", "5 6 7", "6 7", "Infinite loop"],5 6,20,radio
-25,What will be the output of: data = [10, 20]; print(len(data)),["1", "2", "10", "Error"],2,20,radio
-26,What will be the output of: info = {'name': 'Alice'}; print(len(info)),["0", "1", "name", "Error"],1,20,radio
-27,What will be the output of: items = {1, 2, 2, 3}; print(len(items)),["4", "3", "2", "Error"],3,20,radio
-28,What will be the output of: msg = 'Data'; print(f'Value is {msg}'),["Value is Data", "Value is msg", "Data", "Error"],Value is Data,20,radio
-29,What will be the output of: val = 3.5; print(type(val)),["<class 'int'>", "<class 'float'>", "<class 'str'>", "<class 'bool'>"],<class 'float'>,20,radio
-30,What will be the output of: x = 2; while x == 2: print('Loop'); x = 3,["Loop", "Loop Loop", "Error", "No output"],Loop,20,radio
-31,Which of the following structures allows heterogeneous data types (ints, strings, floats) together?,["list", "int only", "float only", "dict keys only"],list,15,radio
-32,Which collection type is unordered and unindexed?,["list", "tuple", "string", "set"],set,15,radio
-33,How do you define a tuple with a single element?,["(5)", "(5,)", "[5]", "{5}"],(5,),15,radio
-34,Which python component evaluates the length of an iterable container?,["len()", "count()", "size()", "sum()"],len(),15,radio
-35,Which loop structure is best suited when the exact number of iterations is unknown beforehand?,["for loop", "while loop", "range loop", "static loop"],while loop,15,radio
-36,What will be the output of: x = 1; while x < 4: print(x); x = x + 1,["1 2 3", "1 2 3 4", "2 3 4", "1 2"],1 2 3,25,radio
-37,What will be the output of: name = 'Code'; print('Language: {}'.format(name)),["Code", "Language: Code", "Language: {}", "Error"],Language: Code,25,radio
-38,What will be the output of: my_dict = {'a': 10, 'b': 20}; print(len(my_dict)),["2", "4", "Error", "3"],2,25,radio
-39,What will be the output of: values = (10, 20, 30); print(type(values)),["<class 'list'>", "<class 'tuple'>", "<class 'set'>", "<class 'dict'>"],<class 'tuple'>,25,radio
-40,What will be the output of: text = 'Python'; print(len(text)),["5", "6", "7", "Error"],6,25,radio
+1,"Which of the following represents a float data type in Python?","[""10"", ""10.5"", ""\""10.5\"""", ""[10.5]""]",10.5,15,radio
+2,"Which of the following is a valid string declaration?","[""name = John"", ""name = 'John'"", ""name = (John)"", ""name = {John}""]","name = 'John'",15,radio
+3,"How do you create an empty set in Python?","[""{}"", ""set()"", ""[]"", ""()""]",set(),15,radio
+4,"Which data type is immutable in Python?","[""list"", ""dict"", ""set"", ""tuple""]",tuple,15,radio
+5,"What is the correct syntax to define a dictionary?","[""{1, 2, 3}"", ""['a': 1, 'b': 2]"", ""{'a': 1, 'b': 2}"", ""('a': 1)""]","{'a': 1, 'b': 2}",15,radio
+6,"Which function is used to find the number of elements in a string or list?","[""count()"", ""size()"", ""len()"", ""length()""]",len(),15,radio
+7,"Which of the following is a valid f-string syntax?","[""f'Hello {name}'"", ""format('Hello {name}')"", ""f'Hello name'"", ""'Hello {name}'.f()""]",f'Hello {name}',15,radio
+8,"Which method is used to format strings using placeholders like '{}'?","[""str()"", "".format()"", ""eval()"", ""print()""]",.format(),15,radio
+9,"Which loop runs as long as a condition remains True?","[""for loop"", ""while loop"", ""loop"", ""repeat loop""]",while loop,15,radio
+10,"What causes a while loop to become an infinite loop?","[""A condition that never becomes False"", ""Using a break statement"", ""Using a counter variable"", ""Setting a timer""]",A condition that never becomes False,15,radio
+11,"Which of the following creates a list?","[""[1, 2, 3]"", ""(1, 2, 3)"", ""{1, 2, 3}"", ""{'a': 1}""]","[1, 2, 3]",15,radio
+12,"Which data type stores key-value pairs?","[""list"", ""tuple"", ""set"", ""dict""]",dict,15,radio
+13,"Can a set contain duplicate values in Python?","[""Yes"", ""No"", ""Only for strings"", ""Only for numbers""]",No,15,radio
+14,"What is the output type of len('Python')?","[""str"", ""float"", ""int"", ""list""]",int,15,radio
+15,"Which brackets are used to define a tuple?","[""[]"", ""{}"", ""()"", ""<>""]",(),15,radio
+16,"Which keyword is used to start a while loop?","[""for"", ""while"", ""loop"", ""repeat""]",while,15,radio
+17,"Which of the following is a valid float value?","[""3"", ""3.14"", ""'3.14'"", ""[3, 14]""]",3.14,15,radio
+18,"How are elements inside a set separated?","[""Semicolons"", ""Colons"", ""Commas"", ""Spaces""]",Commas,15,radio
+19,"Which of the following uses key lookup instead of position lookup?","[""list"", ""tuple"", ""string"", ""dict""]",dict,15,radio
+20,"Which string formatting technique uses curly braces {} and a preceding letter f?","[""f-string"", "".format()"", ""percent formatting"", ""template string""]",f-string,15,radio
+21,"What will be the output of: x = 'Hello'; print(len(x))","[""5"", ""6"", ""Hello"", ""Error""]",6,20,radio
+22,"What will be the output of: a = 10; b = 20; print(f'{a}{b}')","[""30"", ""1020"", ""Error"", ""a b""]",1020,20,radio
+23,"What will be the output of: text = '{} and {}'; print(text.format('Python', 'Java'))","[""Python and Java"", ""{} and {}"", ""Error"", ""Java and Python""]",Python and Java,20,radio
+24,"What will be the output of: x = 5; while x < 7: print(x); x = x + 1","[""5 6"", ""5 6 7"", ""6 7"", ""Infinite loop""]",5 6,20,radio
+25,"What will be the output of: data = [10, 20]; print(len(data))","[""1"", ""2"", ""10"", ""Error""]",2,20,radio
+26,"What will be the output of: info = {'name': 'Alice'}; print(len(info))","[""0"", ""1"", ""name"", ""Error""]",1,20,radio
+27,"What will be the output of: items = {1, 2, 2, 3}; print(len(items))","[""4"", ""3"", ""2"", ""Error""]",3,20,radio
+28,"What will be the output of: msg = 'Data'; print(f'Value is {msg}')","[""Value is Data"", ""Value is msg"", ""Data"", ""Error""]",Value is Data,20,radio
+29,"What will be the output of: val = 3.5; print(type(val))","[""<class 'int'>"", ""<class 'float'>"", ""<class 'str'>"", ""<class 'bool'>""]",<class 'float'>,20,radio
+30,"What will be the output of: x = 2; while x == 2: print('Loop'); x = 3","[""Loop"", ""Loop Loop"", ""Error"", ""No output""]",Loop,20,radio
+31,"Which of the following structures allows heterogeneous data types (ints, strings, floats) together?","[""list"", ""int only"", ""float only"", ""dict keys only""]",list,15,radio
+32,"Which collection type is unordered and unindexed?","[""list"", ""tuple"", ""string"", ""set""]",set,15,radio
+33,"How do you define a tuple with a single element?","[""(5)"", ""(5,)"", ""[5]"", ""{5}""]",(5,),15,radio
+34,"Which python component evaluates the length of an iterable container?","[""len()"", ""count()"", ""size()"", ""sum()""]",len(),15,radio
+35,"Which loop structure is best suited when the exact number of iterations is unknown beforehand?","[""for loop"", ""while loop"", ""range loop"", ""static loop""]",while loop,15,radio
+36,"What will be the output of: x = 1; while x < 4: print(x); x = x + 1","[""1 2 3"", ""1 2 3 4"", ""2 3 4"", ""1 2""]",1 2 3,25,radio
+37,"What will be the output of: name = 'Code'; print('Language: {}'.format(name))","[""Code"", ""Language: Code"", ""Language: {}"", ""Error""]",Language: Code,25,radio
+38,"What will be the output of: my_dict = {'a': 10, 'b': 20}; print(len(my_dict))","[""2"", ""4"", ""Error"", ""3""]",2,25,radio
+39,"What will be the output of: values = (10, 20, 30); print(type(values))","[""<class 'list'>"", ""<class 'tuple'>"", ""<class 'set'>"", ""<class 'dict'>""]",<class 'tuple'>,25,radio
+40,"What will be the output of: text = 'Python'; print(len(text))","[""5"", ""6"", ""7"", ""Error""]",6,25,radio
