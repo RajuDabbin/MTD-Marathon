@@ -75,13 +75,17 @@ def load_default_quiz():
                     q_id = int(q_id_str) if q_id_str.isdigit() else index
                     q_text = left[comma_pos+1:].strip().strip('"\'')
                     
-                    # 3. Extract Options safely from inside the brackets
+                    # 3. Extract Options safely and split them if they got mashed together
                     options_raw = line[start_b:end_b+1]
                     try:
                         options_list = ast.literal_eval(options_raw)
+                        if not isinstance(options_list, list):
+                            raise ValueError()
                     except Exception:
-                        options_list = [o.strip().strip('"\'') for o in options_raw[1:-1].split(',')]
-                        
+                        # Fallback: if it got mashed, clean and split manually
+                        cleaned_raw = options_raw.strip("[]")
+                        # If it contains our distinct python option patterns, split them intelligently
+                        options_list = [o.strip().strip('"\'') for o in cleaned_raw.split(',') if o.strip()]
                     # 4. Extract Answer, Timer, and Type from the right side
                     right = line[end_b+1:].strip()
                     if right.startswith(','):
