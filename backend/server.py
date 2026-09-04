@@ -3,9 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 import json
 import os
-import csv
-import ast
-import io
 
 app = FastAPI()
 
@@ -21,7 +18,7 @@ active_quizzes = {}
 student_responses = {}
 DEFAULT_QUIZ_ID = "MTD-2026"
 RESULTS_FILE = "results.json"
-CSV_FILE = "quiz_questions.csv"
+JSON_FILE = "quiz_questions.json"
 
 def save_responses_to_disk():
     try:
@@ -42,89 +39,16 @@ def load_responses_from_disk():
 def load_default_quiz():
     questions = []
     
-    if os.path.exists(CSV_FILE):
+    if os.path.exists(JSON_FILE):
         try:
-            with open(CSV_FILE, mode="r", encoding="utf-8") as f:
-                content = f.read()
-                
-            content = content.replace("\r\n", "\n")
-            lines = content.split("\n")
-            
-            for index, line in enumerate(lines, start=1):
-                line = line.strip()
-                if not line or "question_id" in line.lower():
-                    continue
-                
-                try:
-                    # 1. Find the options brackets [...]
-                    start_b = line.find('[')
-                    end_b = line.rfind(']')
-                    
-                    if start_b == -1 or end_b == -1:
-                        continue
-                        
-                    # 2. Left side: ID and Question Text
-                    left = line[:start_b].strip()
-                    if left.endswith(','):
-                        left = left[:-1]
-                        
-                    comma_pos = left.find(',')
-                    if comma_pos == -1:
-                        continue
-                        
-                    q_id_str = left[:comma_pos].strip().strip('"\'')
-                    q_id = int(q_id_str) if q_id_str.isdigit() else index
-                    q_text = left[comma_pos+1:].strip().strip('"\'')
-                    
-                    # 3. Middle: Options list parsed directly via ast.literal_eval
-                    options_raw = line[start_b:end_b+1]
-                    try:
-                        options_list = ast.literal_eval(options_raw)
-                        if not isinstance(options_list, list):
-                            raise ValueError()
-                    except Exception:
-                        # Fallback if evaluation fails
-                        options_list = [o.strip().strip('"\'') for o in options_raw[1:-1].split(',') if o.strip()]
-                        
-                    # 4. Right side: correct_answer, timer_seconds, type
-                    right = line[end_b+1:].strip()
-                    if right.startswith(','):
-                        right = right[1:]
-                        
-                    parts = next(csv.reader([right]))
-                    parts = [p.strip().strip('"\'') for p in parts if p.strip()]
-                    
-                    if len(parts) >= 3:
-                        q_type = parts[-1]
-                        q_timer_str = parts[-2]
-                        q_timer = int(q_timer_str) if q_timer_str.isdigit() else 15
-                        q_correct = ",".join(parts[:-2])
-                    elif len(parts) == 2:
-                        q_type = "radio"
-                        q_timer_str = parts[-1]
-                        q_timer = int(q_timer_str) if q_timer_str.isdigit() else 15
-                        q_correct = parts[0]
-                    else:
-                        q_type = "radio"
-                        q_timer = 15
-                        q_correct = parts[0] if parts else ""
-                        
-                    questions.append({
-                        "question_id": q_id,
-                        "question_text": q_text,
-                        "options": options_list,
-                        "correct_answer": q_correct,
-                        "timer_seconds": q_timer,
-                        "type": q_type
-                    })
-                except Exception as row_err:
-                    print(f"Skipping malformed row {index}: {row_err}")
-                        
-            print(f"Successfully loaded {len(questions)} questions cleanly from {CSV_FILE}!")
+            with open(JSON_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                questions = data.get("questions", [])
+            print(f"Successfully loaded {len(questions)} questions cleanly from {JSON_FILE}!")
         except Exception as e:
-            print(f"Error parsing CSV file: {e}")
+            print(f"Error parsing JSON file: {e}")
     else:
-        print(f"Warning: {CSV_FILE} not found in repository root!")
+        print(f"Warning: {JSON_FILE} not found in repository root!")
 
     active_quizzes[DEFAULT_QUIZ_ID] = {
         "quizId": DEFAULT_QUIZ_ID,
