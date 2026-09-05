@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 import json
 import os
+import random
 
 app = FastAPI()
 
@@ -482,10 +483,19 @@ async def start_quiz_timeline(quiz_id: str):
     
     print(f">>> STARTING QUIZ TIMELINE FOR ROOM: {quiz_id} ({total_q} questions) <<<")
 
+    # Send unique shuffled option layouts to each connected client separately
     for conn in manager.active_connections.get(quiz_id, []):
+        client_questions = []
+        for q in questions:
+            q_copy = q.copy()
+            options = list(q_copy["options"])
+            random.shuffle(options)  # Shuffles options randomly for this user
+            q_copy["options"] = options
+            client_questions.append(q_copy)
+
         await conn.send_text(json.dumps({
             "type": "quiz_started",
-            "questions": questions
+            "questions": client_questions
         }))
 
     for index, current_q in enumerate(questions):
