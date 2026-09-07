@@ -26,9 +26,9 @@ EMBEDDED_QUESTIONS = [
         "question_id": 1,
         "question_text": "Which of the following represents a float data type in Python?",
         "options": ["10", "10.5", "\"10.5\"", "[10.5]"],
-        "correct_answer": "10.5",
+        "correct_answer": ["10.5","10"],
         "timer_seconds": 15,
-        "type": "radio"
+        "type": "checkbox"
     },
     {
         "question_id": 2,
