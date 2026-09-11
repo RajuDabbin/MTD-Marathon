@@ -4,6 +4,9 @@ import asyncio
 import json
 import os
 import random
+from sqlalchemy import create_engine, Column, String, Integer, JSON
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
 app = FastAPI()
 
@@ -15,12 +18,42 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-active_quizzes = {}
-student_responses = {}
-DEFAULT_QUIZ_ID = "MTD-2026"
-RESULTS_FILE = "results.json"
+# ==================== POSTGRESQL DATABASE SETUP ====================
+# Uses DATABASE_URL environment variable (configured in Render/Heroku/Vercel) or falls back to local PostgreSQL
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/mtd_marathon")
 
-# Embedded questions list - guaranteed to load instantly without missing file errors on Render!
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+
+class ParticipantModel(Base):
+    __tablename__ = "participants"
+    
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    quiz_id = Column(String, index=True)
+    usn = Column(String, index=True)
+    student_info = Column(JSON)
+    answers = Column(JSON, nullable=True)
+    score = Column(Integer, default=0)
+    total = Column(Integer, default=0)
+    percentage = Column(Integer, default=0)
+    status = Column(String, default="Joined") # "Joined" or "Completed"
+
+# Create database tables automatically on startup
+Base.metadata.create_all(bind=engine)
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+# ===================================================================
+
+active_quizzes = {}
+DEFAULT_QUIZ_ID = "MTD-2026"
+
+# Embedded questions list
 EMBEDDED_QUESTIONS = [
     {
         "question_id": 1,
@@ -344,22 +377,6 @@ EMBEDDED_QUESTIONS = [
     }
 ]
 
-def save_responses_to_disk():
-    try:
-        with open(RESULTS_FILE, "w", encoding="utf-8") as f:
-            json.dump(student_responses, f, indent=4)
-    except Exception as e:
-        print(f"Error saving results: {e}")
-
-def load_responses_from_disk():
-    global student_responses
-    if os.path.exists(RESULTS_FILE):
-        try:
-            with open(RESULTS_FILE, "r", encoding="utf-8") as f:
-                student_responses = json.load(f)
-        except Exception:
-            student_responses = {}
-
 def load_default_quiz():
     active_quizzes[DEFAULT_QUIZ_ID] = {
         "quizId": DEFAULT_QUIZ_ID,
@@ -371,7 +388,6 @@ def load_default_quiz():
 @app.on_event("startup")
 async def startup_event():
     load_default_quiz()
-    load_responses_from_disk()
 
 class ConnectionManager:
     def __init__(self):
@@ -390,47 +406,61 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
+def compute_participant_score(quiz, student_answers):
+    score = 0
+    total_questions = len(quiz["questions"])
+
+    for index, q in enumerate(quiz["questions"]):
+        ans_key = str(index)
+        student_choice = student_answers.get(ans_key, [])
+        correct_ans = q["correct_answer"]
+
+        if q["type"] == "radio":
+            if str(student_choice).strip().lower() == str(correct_ans).strip().lower():
+                score += 1
+        elif q["type"] == "checkbox":
+            if isinstance(student_choice, list):
+                student_set = {str(x).strip().lower() for x in student_choice}
+                correct_set = {str(x).strip().lower() for x in correct_ans.split(",")}
+                if student_set == correct_set:
+                    score += 1
+
+    percentage = round((score / total_questions) * 100, 2) if total_questions > 0 else 0.0
+    return score, total_questions, percentage
+
 @app.post("/api/evaluate-quiz")
 def evaluate_quiz(data: dict):
     quiz_id = data.get("quizId", DEFAULT_QUIZ_ID)
     quiz = active_quizzes.get(quiz_id)
-    responses = student_responses.get(quiz_id, {})
-
     if not quiz:
         raise HTTPException(status_code=404, detail="Quiz not found")
 
-    evaluation_results = []
-    for usn, resp in responses.items():
-        student_data = resp.get("studentInfo", {"usn": usn})
-        student_answers = resp.get("answers", {})
-        score = 0
-        total_questions = len(quiz["questions"])
+    db = SessionLocal()
+    try:
+        participants = db.query(ParticipantModel).filter_by(quiz_id=quiz_id).all()
+        evaluation_results = []
 
-        for index, q in enumerate(quiz["questions"]):
-            ans_key = str(index)
-            student_choice = student_answers.get(ans_key, [])
-            correct_ans = q["correct_answer"]
+        for p in participants:
+            answers = p.answers or {}
+            score, total, percentage = compute_participant_score(quiz, answers)
+            
+            # Update DB with latest evaluation metrics
+            p.score = score
+            p.total = total
+            p.percentage = percentage
+            db.commit()
 
-            if q["type"] == "radio":
-                if str(student_choice).strip().lower() == str(correct_ans).strip().lower():
-                    score += 1
-            elif q["type"] == "checkbox":
-                if isinstance(student_choice, list):
-                    student_set = {str(x).strip().lower() for x in student_choice}
-                    correct_set = {str(x).strip().lower() for x in correct_ans.split(",")}
-                    if student_set == correct_set:
-                        score += 1
+            evaluation_results.append({
+                "student": p.student_info,
+                "score": score,
+                "total": total,
+                "percentage": percentage,
+                "answers": answers
+            })
 
-        percentage = round((score / total_questions) * 100, 2) if total_questions > 0 else 0.0
-        evaluation_results.append({
-            "student": student_data,
-            "score": score,
-            "total": total_questions,
-            "percentage": percentage,
-            "answers": student_answers
-        })
-
-    return {"success": True, "results": evaluation_results}
+        return {"success": True, "results": evaluation_results}
+    finally:
+        db.close()
 
 @app.get("/api/get-results/{quiz_id}")
 def get_quiz_results(quiz_id: str):
@@ -438,40 +468,31 @@ def get_quiz_results(quiz_id: str):
     if not quiz:
         raise HTTPException(status_code=404, detail="Quiz not found")
     
-    responses = student_responses.get(quiz_id, {})
-    evaluation_results = []
-    
-    for usn, resp in responses.items():
-        student_data = resp.get("studentInfo", {"usn": usn})
-        student_answers = resp.get("answers", {})
-        score = 0
-        total_questions = len(quiz["questions"])
+    db = SessionLocal()
+    try:
+        participants = db.query(ParticipantModel).filter_by(quiz_id=quiz_id).all()
+        evaluation_results = []
 
-        for index, q in enumerate(quiz["questions"]):
-            ans_key = str(index)
-            student_choice = student_answers.get(ans_key, [])
-            correct_ans = q["correct_answer"]
+        for p in participants:
+            answers = p.answers or {}
+            score, total, percentage = compute_participant_score(quiz, answers)
 
-            if q["type"] == "radio":
-                if str(student_choice).strip().lower() == str(correct_ans).strip().lower():
-                    score += 1
-            elif q["type"] == "checkbox":
-                if isinstance(student_choice, list):
-                    student_set = {str(x).strip().lower() for x in student_choice}
-                    correct_set = {str(x).strip().lower() for x in correct_ans.split(",")}
-                    if student_set == correct_set:
-                        score += 1
+            p.score = score
+            p.total = total
+            p.percentage = percentage
+            db.commit()
 
-        percentage = round((score / total_questions) * 100, 2) if total_questions > 0 else 0.0
-        evaluation_results.append({
-            "student": student_data,
-            "score": score,
-            "total": total_questions,
-            "percentage": percentage,
-            "answers": student_answers
-        })
+            evaluation_results.append({
+                "student": p.student_info,
+                "score": score,
+                "total": total,
+                "percentage": percentage,
+                "answers": answers
+            })
 
-    return {"success": True, "results": evaluation_results}
+        return {"success": True, "results": evaluation_results}
+    finally:
+        db.close()
 
 async def start_quiz_timeline(quiz_id: str):
     if quiz_id not in active_quizzes:
@@ -483,13 +504,12 @@ async def start_quiz_timeline(quiz_id: str):
     
     print(f">>> STARTING QUIZ TIMELINE FOR ROOM: {quiz_id} ({total_q} questions) <<<")
 
-    # Send unique shuffled option layouts to each connected client separately
     for conn in manager.active_connections.get(quiz_id, []):
         client_questions = []
         for q in questions:
             q_copy = q.copy()
             options = list(q_copy["options"])
-            random.shuffle(options)  # Shuffles options randomly for this user
+            random.shuffle(options)
             q_copy["options"] = options
             client_questions.append(q_copy)
 
@@ -529,6 +549,7 @@ async def start_quiz_timeline(quiz_id: str):
 async def websocket_endpoint(websocket: WebSocket, quiz_id: str):
     await manager.connect(quiz_id, websocket)
     student_usn = None
+    db = SessionLocal()
 
     try:
         while True:
@@ -541,21 +562,60 @@ async def websocket_endpoint(websocket: WebSocket, quiz_id: str):
                 student_usn = student_data.get("usn")
                 websocket.student_data = student_data
 
+                # RECORD STUDENT JOIN DETAILS IN POSTGRESQL
+                if student_usn:
+                    existing = db.query(ParticipantModel).filter_by(quiz_id=quiz_id, usn=student_usn).first()
+                    if not existing:
+                        new_participant = ParticipantModel(
+                            quiz_id=quiz_id,
+                            usn=student_usn,
+                            student_info=student_data,
+                            status="Joined"
+                        )
+                        db.add(new_participant)
+                        db.commit()
+                        print(f"Participant {student_usn} recorded in PostgreSQL (Joined).")
+
             elif event_type == "start_quiz_sequence":
                 asyncio.create_task(start_quiz_timeline(quiz_id))
 
             elif event_type == "submit_answer":
                 if student_usn:
-                    if quiz_id not in student_responses:
-                        student_responses[quiz_id] = {}
-                    student_responses[quiz_id][student_usn] = {
-                        "studentInfo": getattr(websocket, "student_data", {"usn": student_usn}),
-                        "answers": data.get("answersMap", {})
-                    }
-                    save_responses_to_disk()
+                    answers_map = data.get("answersMap", {})
+                    
+                    # FETCH AND UPDATE PARTICIPANT ANSWERS AND ATTACH CALCULATED MARKS IN POSTGRESQL
+                    participant = db.query(ParticipantModel).filter_by(quiz_id=quiz_id, usn=student_usn).first()
+                    quiz = active_quizzes.get(quiz_id, {"questions": EMBEDDED_QUESTIONS})
+                    score, total, percentage = compute_participant_score(quiz, answers_map)
+
+                    if participant:
+                        participant.answers = answers_map
+                        participant.score = score
+                        participant.total = total
+                        participant.percentage = percentage
+                        participant.status = "Completed"
+                        db.commit()
+                        print(f"Marks and answers updated in PostgreSQL for {student_usn}: {score}/{total}")
+                    else:
+                        # Fallback create if join event missed
+                        new_participant = ParticipantModel(
+                            quiz_id=quiz_id,
+                            usn=student_usn,
+                            student_info=getattr(websocket, "student_data", {"usn": student_usn}),
+                            answers=answers_map,
+                            score=score,
+                            total=total,
+                            percentage=percentage,
+                            status="Completed"
+                        )
+                        db.add(new_participant)
+                        db.commit()
+                        print(f"New participant created and scored in PostgreSQL for {student_usn}: {score}/{total}")
 
     except WebSocketDisconnect:
         manager.fn_disconnect(quiz_id, websocket)
+    finally:
+        db.close()
 
 if __name__ == "__main__":
     import uvicorn
