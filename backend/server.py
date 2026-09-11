@@ -19,7 +19,6 @@ app.add_middleware(
 )
 
 # ==================== POSTGRESQL DATABASE SETUP ====================
-# Uses DATABASE_URL environment variable (configured in Render/Heroku/Vercel) or falls back to local PostgreSQL
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/mtd_marathon")
 
 engine = create_engine(DATABASE_URL)
@@ -39,355 +38,33 @@ class ParticipantModel(Base):
     percentage = Column(Integer, default=0)
     status = Column(String, default="Joined") # "Joined" or "Completed"
 
-# Create database tables automatically on startup
 Base.metadata.create_all(bind=engine)
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 # ===================================================================
 
 active_quizzes = {}
-DEFAULT_QUIZ_ID = "MTD-2026"
+QUIZ_FILE = "questions.json"
 
-# Embedded questions list
-EMBEDDED_QUESTIONS = [
-    {
-        "question_id": 1,
-        "question_text": "Which of the following represents a float data type in Python?",
-        "options": ["10", "10.5", "\"10.5\"", "[10.5]"],
-        "correct_answer": ["10.5","10"],
-        "timer_seconds": 15,
-        "type": "checkbox"
-    },
-    {
-        "question_id": 2,
-        "question_text": "Which of the following is a valid string declaration?",
-        "options": ["name = John", "name = 'John'", "name = (John)", "name = {John}"],
-        "correct_answer": "name = 'John'",
-        "timer_seconds": 15,
-        "type": "radio"
-    },
-    {
-        "question_id": 3,
-        "question_text": "How do you create an empty set in Python?",
-        "options": ["{}", "set()", "[]", "()"],
-        "correct_answer": "set()",
-        "timer_seconds": 15,
-        "type": "radio"
-    },
-    {
-        "question_id": 4,
-        "question_text": "Which data type is immutable in Python?",
-        "options": ["list", "dict", "set", "tuple"],
-        "correct_answer": "tuple",
-        "timer_seconds": 15,
-        "type": "radio"
-    },
-    {
-        "question_id": 5,
-        "question_text": "What is the correct syntax to define a dictionary?",
-        "options": ["{1, 2, 3}", "['a': 1, 'b': 2]", "{'a': 1, 'b': 2}", "('a': 1)"],
-        "correct_answer": "{'a': 1, 'b': 2}",
-        "timer_seconds": 15,
-        "type": "radio"
-    },
-    {
-        "question_id": 6,
-        "question_text": "Which function is used to find the number of elements in a string or list?",
-        "options": ["count()", "size()", "len()", "length()"],
-        "correct_answer": "len()",
-        "timer_seconds": 15,
-        "type": "radio"
-    },
-    {
-        "question_id": 7,
-        "question_text": "Which of the following is a valid f-string syntax?",
-        "options": ["f'Hello {name}'", "format('Hello {name}')", "f'Hello name'", "'Hello {name}'.f()"],
-        "correct_answer": "f'Hello {name}'",
-        "timer_seconds": 15,
-        "type": "radio"
-    },
-    {
-        "question_id": 8,
-        "question_text": "Which method is used to format strings using placeholders like '{}'?",
-        "options": ["str()", ".format()", "eval()", "print()"],
-        "correct_answer": ".format()",
-        "timer_seconds": 15,
-        "type": "radio"
-    },
-    {
-        "question_id": 9,
-        "question_text": "Which loop runs as long as a condition remains True?",
-        "options": ["for loop", "while loop", "loop", "repeat loop"],
-        "correct_answer": "while loop",
-        "timer_seconds": 15,
-        "type": "radio"
-    },
-    {
-        "question_id": 10,
-        "question_text": "What causes a while loop to become an infinite loop?",
-        "options": ["A condition that never becomes False", "Using a break statement", "Using a counter variable", "Setting a timer"],
-        "correct_answer": "A condition that never becomes False",
-        "timer_seconds": 15,
-        "type": "radio"
-    },
-    {
-        "question_id": 11,
-        "question_text": "Which of the following creates a list?",
-        "options": ["[1, 2, 3]", "(1, 2, 3)", "{1, 2, 3}", "{'a': 1}"],
-        "correct_answer": "[1, 2, 3]",
-        "timer_seconds": 15,
-        "type": "radio"
-    },
-    {
-        "question_id": 12,
-        "question_text": "Which data type stores key-value pairs?",
-        "options": ["list", "tuple", "set", "dict"],
-        "correct_answer": "dict",
-        "timer_seconds": 15,
-        "type": "radio"
-    },
-    {
-        "question_id": 13,
-        "question_text": "Can a set contain duplicate values in Python?",
-        "options": ["Yes", "No", "Only for strings", "Only for numbers"],
-        "correct_answer": "No",
-        "timer_seconds": 15,
-        "type": "radio"
-    },
-    {
-        "question_id": 14,
-        "question_text": "What is the output type of len('Python')?",
-        "options": ["str", "float", "int", "list"],
-        "correct_answer": "int",
-        "timer_seconds": 15,
-        "type": "radio"
-    },
-    {
-        "question_id": 15,
-        "question_text": "Which brackets are used to define a tuple?",
-        "options": ["[]", "{}", "()", "<>"],
-        "correct_answer": "()",
-        "timer_seconds": 15,
-        "type": "radio"
-    },
-    {
-        "question_id": 16,
-        "question_text": "Which keyword is used to start a while loop?",
-        "options": ["for", "while", "loop", "repeat"],
-        "correct_answer": "while",
-        "timer_seconds": 15,
-        "type": "radio"
-    },
-    {
-        "question_id": 17,
-        "question_text": "Which of the following is a valid float value?",
-        "options": ["3", "3.14", "'3.14'", "[3, 14]"],
-        "correct_answer": "3.14",
-        "timer_seconds": 15,
-        "type": "radio"
-    },
-    {
-        "question_id": 18,
-        "question_text": "How are elements inside a set separated?",
-        "options": ["Semicolons", "Colons", "Commas", "Spaces"],
-        "correct_answer": "Commas",
-        "timer_seconds": 15,
-        "type": "radio"
-    },
-    {
-        "question_id": 19,
-        "question_text": "Which of the following uses key lookup instead of position lookup?",
-        "options": ["list", "tuple", "string", "dict"],
-        "correct_answer": "dict",
-        "timer_seconds": 15,
-        "type": "radio"
-    },
-    {
-        "question_id": 20,
-        "question_text": "Which string formatting technique uses curly braces {} and a preceding letter f?",
-        "options": ["f-string", ".format()", "percent formatting", "template string"],
-        "correct_answer": "f-string",
-        "timer_seconds": 15,
-        "type": "radio"
-    },
-    {
-        "question_id": 21,
-        "question_text": "What will be the output of: x = 'Hello'; print(len(x))",
-        "options": ["5", "6", "Hello", "Error"],
-        "correct_answer": "6",
-        "timer_seconds": 20,
-        "type": "radio"
-    },
-    {
-        "question_id": 22,
-        "question_text": "What will be the output of: a = 10; b = 20; print(f'{a}{b}')",
-        "options": ["30", "1020", "Error", "a b"],
-        "correct_answer": "1020",
-        "timer_seconds": 20,
-        "type": "radio"
-    },
-    {
-        "question_id": 23,
-        "question_text": "What will be the output of: text = '{} and {}'; print(text.format('Python', 'Java'))",
-        "options": ["Python and Java", "{} and {}", "Error", "Java and Python"],
-        "correct_answer": "Python and Java",
-        "timer_seconds": 20,
-        "type": "radio"
-    },
-    {
-        "question_id": 24,
-        "question_text": "What will be the output of: x = 5; while x < 7: print(x); x = x + 1",
-        "options": ["5 6", "5 6 7", "6 7", "Infinite loop"],
-        "correct_answer": "5 6",
-        "timer_seconds": 20,
-        "type": "radio"
-    },
-    {
-        "question_id": 25,
-        "question_text": "What will be the output of: data = [10, 20]; print(len(data))",
-        "options": ["1", "2", "10", "Error"],
-        "correct_answer": "2",
-        "timer_seconds": 20,
-        "type": "radio"
-    },
-    {
-        "question_id": 26,
-        "question_text": "What will be the output of: info = {'name': 'Alice'}; print(len(info))",
-        "options": ["0", "1", "name", "Error"],
-        "correct_answer": "1",
-        "timer_seconds": 20,
-        "type": "radio"
-    },
-    {
-        "question_id": 27,
-        "question_text": "What will be the output of: items = {1, 2, 2, 3}; print(len(items))",
-        "options": ["4", "3", "2", "Error"],
-        "correct_answer": "3",
-        "timer_seconds": 20,
-        "type": "radio"
-    },
-    {
-        "question_id": 28,
-        "question_text": "What will be the output of: msg = 'Data'; print(f'Value is {msg}')",
-        "options": ["Value is Data", "Value is msg", "Data", "Error"],
-        "correct_answer": "Value is Data",
-        "timer_seconds": 20,
-        "type": "radio"
-    },
-    {
-        "question_id": 29,
-        "question_text": "What will be the output of: val = 3.5; print(type(val))",
-        "options": ["<class 'int'>", "<class 'float'>", "<class 'str'>", "<class 'bool'>"],
-        "correct_answer": "<class 'float'>",
-        "timer_seconds": 20,
-        "type": "radio"
-    },
-    {
-        "question_id": 30,
-        "question_text": "What will be the output of: x = 2; while x == 2: print('Loop'); x = 3",
-        "options": ["Loop", "Loop Loop", "Error", "No output"],
-        "correct_answer": "Loop",
-        "timer_seconds": 20,
-        "type": "radio"
-    },
-    {
-        "question_id": 31,
-        "question_text": "Which of the following structures allows heterogeneous data types (ints, strings, floats) together?",
-        "options": ["list", "int only", "float only", "dict keys only"],
-        "correct_answer": "list",
-        "timer_seconds": 15,
-        "type": "radio"
-    },
-    {
-        "question_id": 32,
-        "question_text": "Which collection type is unordered and unindexed?",
-        "options": ["list", "tuple", "string", "set"],
-        "correct_answer": "set",
-        "timer_seconds": 15,
-        "type": "radio"
-    },
-    {
-        "question_id": 33,
-        "question_text": "How do you define a tuple with a single element?",
-        "options": ["(5)", "(5,)", "[5]", "{5}"],
-        "correct_answer": "(5,)",
-        "timer_seconds": 15,
-        "type": "radio"
-    },
-    {
-        "question_id": 34,
-        "question_text": "Which python component evaluates the length of an iterable container?",
-        "options": ["len()", "count()", "size()", "sum()"],
-        "correct_answer": "len()",
-        "timer_seconds": 15,
-        "type": "radio"
-    },
-    {
-        "question_id": 35,
-        "question_text": "Which loop structure is best suited when the exact number of iterations is unknown beforehand?",
-        "options": ["for loop", "while loop", "range loop", "static loop"],
-        "correct_answer": "while loop",
-        "timer_seconds": 15,
-        "type": "radio"
-    },
-    {
-        "question_id": 36,
-        "question_text": "What will be the output of: x = 1; while x < 4: print(x); x = x + 1",
-        "options": ["1 2 3", "1 2 3 4", "2 3 4", "1 2"],
-        "correct_answer": "1 2 3",
-        "timer_seconds": 25,
-        "type": "radio"
-    },
-    {
-        "question_id": 37,
-        "question_text": "What will be the output of: name = 'Code'; print('Language: {}'.format(name))",
-        "options": ["Code", "Language: Code", "Language: {}", "Error"],
-        "correct_answer": "Language: Code",
-        "timer_seconds": 25,
-        "type": "radio"
-    },
-    {
-        "question_id": 38,
-        "question_text": "What will be the output of: my_dict = {'a': 10, 'b': 20}; print(len(my_dict))",
-        "options": ["2", "4", "Error", "3"],
-        "correct_answer": "2",
-        "timer_seconds": 25,
-        "type": "radio"
-    },
-    {
-        "question_id": 39,
-        "question_text": "What will be the output of: values = (10, 20, 30); print(type(values))",
-        "options": ["<class 'list'>", "<class 'tuple'>", "<class 'set'>", "<class 'dict'>"],
-        "correct_answer": "<class 'tuple'>",
-        "timer_seconds": 25,
-        "type": "radio"
-    },
-    {
-        "question_id": 40,
-        "question_text": "What will be the output of: text = 'Python'; print(len(text))",
-        "options": ["5", "6", "7", "Error"],
-        "correct_answer": "6",
-        "timer_seconds": 25,
-        "type": "radio"
-    }
-]
+def load_quizzes_from_file():
+    global active_quizzes
+    if os.path.exists(QUIZ_FILE):
+        try:
+            with open(QUIZ_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                for q_id, questions in data.items():
+                    active_quizzes[q_id] = {
+                        "quizId": q_id,
+                        "questions": questions,
+                        "isCompleted": False
+                    }
+            print(f"Successfully loaded {len(active_quizzes)} quizzes from {QUIZ_FILE}!")
+        except Exception as e:
+            print(f"Error reading {QUIZ_FILE}: {e}")
+    else:
+        print(f"Warning: {QUIZ_FILE} not found. No quizzes loaded.")
 
-def load_default_quiz():
-    active_quizzes[DEFAULT_QUIZ_ID] = {
-        "quizId": DEFAULT_QUIZ_ID,
-        "questions": EMBEDDED_QUESTIONS,
-        "isCompleted": False
-    }
-    print(f"Successfully loaded {len(EMBEDDED_QUESTIONS)} questions directly into memory!")
-    
 @app.on_event("startup")
 async def startup_event():
-    load_default_quiz()
+    load_quizzes_from_file()
 
 class ConnectionManager:
     def __init__(self):
@@ -408,9 +85,10 @@ manager = ConnectionManager()
 
 def compute_participant_score(quiz, student_answers):
     score = 0
-    total_questions = len(quiz["questions"])
+    questions = quiz["questions"]
+    total_questions = len(questions)
 
-    for index, q in enumerate(quiz["questions"]):
+    for index, q in enumerate(questions):
         ans_key = str(index)
         student_choice = student_answers.get(ans_key, [])
         correct_ans = q["correct_answer"]
@@ -430,10 +108,10 @@ def compute_participant_score(quiz, student_answers):
 
 @app.post("/api/evaluate-quiz")
 def evaluate_quiz(data: dict):
-    quiz_id = data.get("quizId", DEFAULT_QUIZ_ID)
+    quiz_id = data.get("quizId")
     quiz = active_quizzes.get(quiz_id)
     if not quiz:
-        raise HTTPException(status_code=404, detail="Quiz not found")
+        raise HTTPException(status_code=404, detail="Quiz ID not found")
 
     db = SessionLocal()
     try:
@@ -444,7 +122,6 @@ def evaluate_quiz(data: dict):
             answers = p.answers or {}
             score, total, percentage = compute_participant_score(quiz, answers)
             
-            # Update DB with latest evaluation metrics
             p.score = score
             p.total = total
             p.percentage = percentage
@@ -466,7 +143,7 @@ def evaluate_quiz(data: dict):
 def get_quiz_results(quiz_id: str):
     quiz = active_quizzes.get(quiz_id)
     if not quiz:
-        raise HTTPException(status_code=404, detail="Quiz not found")
+        raise HTTPException(status_code=404, detail="Quiz ID not found")
     
     db = SessionLocal()
     try:
@@ -495,10 +172,11 @@ def get_quiz_results(quiz_id: str):
         db.close()
 
 async def start_quiz_timeline(quiz_id: str):
-    if quiz_id not in active_quizzes:
-        load_default_quiz()
-
     quiz = active_quizzes.get(quiz_id)
+    if not quiz:
+        print(f"Quiz ID {quiz_id} not found for timeline start.")
+        return
+
     questions = quiz["questions"]
     total_q = len(questions)
     
@@ -547,6 +225,13 @@ async def start_quiz_timeline(quiz_id: str):
 
 @app.websocket("/ws/{quiz_id}")
 async def websocket_endpoint(websocket: WebSocket, quiz_id: str):
+    # Validate if quiz_id exists before accepting or handling
+    if quiz_id not in active_quizzes:
+        await websocket.accept()
+        await websocket.send_text(json.dumps({"type": "error", "message": "Invalid Quiz ID"}))
+        await websocket.close()
+        return
+
     await manager.connect(quiz_id, websocket)
     student_usn = None
     db = SessionLocal()
@@ -562,7 +247,6 @@ async def websocket_endpoint(websocket: WebSocket, quiz_id: str):
                 student_usn = student_data.get("usn")
                 websocket.student_data = student_data
 
-                # RECORD STUDENT JOIN DETAILS IN POSTGRESQL
                 if student_usn:
                     existing = db.query(ParticipantModel).filter_by(quiz_id=quiz_id, usn=student_usn).first()
                     if not existing:
@@ -574,7 +258,7 @@ async def websocket_endpoint(websocket: WebSocket, quiz_id: str):
                         )
                         db.add(new_participant)
                         db.commit()
-                        print(f"Participant {student_usn} recorded in PostgreSQL (Joined).")
+                        print(f"Participant {student_usn} recorded in PostgreSQL for Quiz ID: {quiz_id}.")
 
             elif event_type == "start_quiz_sequence":
                 asyncio.create_task(start_quiz_timeline(quiz_id))
@@ -582,12 +266,10 @@ async def websocket_endpoint(websocket: WebSocket, quiz_id: str):
             elif event_type == "submit_answer":
                 if student_usn:
                     answers_map = data.get("answersMap", {})
-                    
-                    # FETCH AND UPDATE PARTICIPANT ANSWERS AND ATTACH CALCULATED MARKS IN POSTGRESQL
-                    participant = db.query(ParticipantModel).filter_by(quiz_id=quiz_id, usn=student_usn).first()
-                    quiz = active_quizzes.get(quiz_id, {"questions": EMBEDDED_QUESTIONS})
+                    quiz = active_quizzes.get(quiz_id)
                     score, total, percentage = compute_participant_score(quiz, answers_map)
-
+                    
+                    participant = db.query(ParticipantModel).filter_by(quiz_id=quiz_id, usn=student_usn).first()
                     if participant:
                         participant.answers = answers_map
                         participant.score = score
@@ -595,9 +277,8 @@ async def websocket_endpoint(websocket: WebSocket, quiz_id: str):
                         participant.percentage = percentage
                         participant.status = "Completed"
                         db.commit()
-                        print(f"Marks and answers updated in PostgreSQL for {student_usn}: {score}/{total}")
+                        print(f"Score updated in PostgreSQL for {student_usn} in room {quiz_id}: {score}/{total}")
                     else:
-                        # Fallback create if join event missed
                         new_participant = ParticipantModel(
                             quiz_id=quiz_id,
                             usn=student_usn,
@@ -610,7 +291,6 @@ async def websocket_endpoint(websocket: WebSocket, quiz_id: str):
                         )
                         db.add(new_participant)
                         db.commit()
-                        print(f"New participant created and scored in PostgreSQL for {student_usn}: {score}/{total}")
 
     except WebSocketDisconnect:
         manager.fn_disconnect(quiz_id, websocket)
