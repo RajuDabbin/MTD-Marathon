@@ -188,7 +188,6 @@ export default function StudentApp() {
               <div key={qIndex} className="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-md space-y-4">
                 <div className="border-b border-slate-700 pb-3">
                   <span className="text-sm font-bold text-emerald-400">Question {qIndex + 1}</span>
-                  <p className="text-sm text-slate-200 mt-2 font-medium">{q.question_text}</p>
                   <div className="text-xs text-slate-400 mt-1">
                     {isRadio ? "🔘 Select a correct answer" : "☑️ Select all correct answers"}
                   </div>
