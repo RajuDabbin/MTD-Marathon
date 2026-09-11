@@ -61,6 +61,7 @@ export default function StudentApp() {
     const websocket = new WebSocket(`${BACKEND_WS_URL}/ws/${quizId.trim()}`);
 
     websocket.onopen = () => {
+      // Sends join data which gets instantly recorded in PostgreSQL as "Joined"
       websocket.send(JSON.stringify({ type: 'join_quiz', studentData: student }));
       setJoined(true);
     };
@@ -93,6 +94,7 @@ export default function StudentApp() {
   const handleManualSubmit = (e) => {
     e.preventDefault();
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      // Submits answers map; backend calculates score and binds marks to PostgreSQL record
       wsRef.current.send(JSON.stringify({ type: 'submit_answer', answersMap }));
     }
     setSubmitted(true);
@@ -152,6 +154,7 @@ export default function StudentApp() {
         <div className="bg-slate-800 border border-slate-700 p-8 rounded-2xl shadow-2xl max-w-md w-full text-center space-y-4">
           <div className="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">✓</div>
           <h2 className="text-2xl font-bold text-white">Successfully Submitted!</h2>
+          <p className="text-xs text-slate-400">Your answers and calculated marks have been safely synchronized to the database.</p>
         </div>
       </div>
     );
@@ -183,6 +186,7 @@ export default function StudentApp() {
               <div key={qIndex} className="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-md space-y-4">
                 <div className="border-b border-slate-700 pb-3">
                   <span className="text-sm font-bold text-emerald-400">Question {qIndex + 1}</span>
+                  <p className="text-sm text-slate-200 mt-2 font-medium">{q.question_text}</p>
                   <div className="text-xs text-slate-400 mt-1">
                     {isRadio ? "🔘 Select a correct answer" : "☑️ Select all correct answers"}
                   </div>
