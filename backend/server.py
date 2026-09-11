@@ -18,7 +18,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ==================== POSTGRESQL DATABASE SETUP ====================
+
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/mtd_marathon")
 
 engine = create_engine(DATABASE_URL)
@@ -36,7 +36,7 @@ class ParticipantModel(Base):
     score = Column(Integer, default=0)
     total = Column(Integer, default=0)
     percentage = Column(Integer, default=0)
-    status = Column(String, default="Joined") # "Joined" or "Completed"
+    status = Column(String, default="Joined") # "Joined"
 
 Base.metadata.create_all(bind=engine)
 # ===================================================================
