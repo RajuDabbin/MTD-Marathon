@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 
-const BACKEND_WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:5000';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://mtd-marathon.onrender.com";
+const WS_URL = import.meta.env.VITE_WS_URL || "wss://mtd-marathon.onrender.com";
 
 export default function StudentApp() {
   const [joined, setJoined] = useState(false);
@@ -58,7 +59,8 @@ export default function StudentApp() {
       return;
     }
 
-    const websocket = new WebSocket(`${BACKEND_WS_URL}/ws/${quizId.trim()}`);
+    // Uses live secure WebSocket URL on production, falls back safely if local
+    const websocket = new WebSocket(`${WS_URL}/ws/${quizId.trim()}`);
 
     websocket.onopen = () => {
       // Sends join data which gets instantly recorded in PostgreSQL as "Joined"
