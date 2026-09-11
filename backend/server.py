@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 import json
 import os
+import uvicorn
 import random
 from sqlalchemy import create_engine, Column, String, Integer, JSON
 from sqlalchemy.ext.declarative import declarative_base
@@ -298,5 +299,5 @@ async def websocket_endpoint(websocket: WebSocket, quiz_id: str):
         db.close()
 
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("server:app", host="0.0.0.0", port=5000, reload=True)
+    port = int(os.environ.get("PORT", 10000))
+    uvicorn.run("server:app", host="0.0.0.0", port=port)
