@@ -1,0 +1,30 @@
+{
+  "MTD-2026": [
+    {
+      "question_id": 1,
+      "question_text": "Which of the following represents a float data type in Python?",
+      "options": ["10", "10.5", "\"10.5\"", "[10.5]"],
+      "correct_answer": "10.5",
+      "timer_seconds": 15,
+      "type": "radio"
+    },
+    {
+      "question_id": 2,
+      "question_text": "Which of the following is a valid string declaration?",
+      "options": ["name = John", "name = 'John'", "name = (John)", "name = {John}"],
+      "correct_answer": "name = 'John'",
+      "timer_seconds": 15,
+      "type": "radio"
+    }
+  ],
+  "ADV-PYTHON-2026": [
+    {
+      "question_id": 1,
+      "question_text": "What is a decorator in Python?",
+      "options": ["A design pattern", "A function modifier", "A built-in loop", "A data type"],
+      "correct_answer": "A function modifier",
+      "timer_seconds": 20,
+      "type": "radio"
+    }
+  ]
+}
