@@ -248,7 +248,7 @@ async def websocket_endpoint(websocket: WebSocket, quiz_id: str):
                 student_usn = student_data.get("usn")
                 websocket.student_data = student_data
 
-                if student_usn:
+                if student_usn and student_usn != "HOST_ADMIN":
                     existing = db.query(ParticipantModel).filter_by(quiz_id=quiz_id, usn=student_usn).first()
                     if not existing:
                         new_participant = ParticipantModel(
